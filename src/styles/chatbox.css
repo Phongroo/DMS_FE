@@ -1,0 +1,331 @@
+/* Chatbox Container */
+.chatbox-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+/* Chat Toggle Button */
+.chatbox-toggle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: white;
+  border: none;
+  font-size: 32px;
+  cursor: pointer;
+  box-shadow: 0 8px 24px var(--accent-soft);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chatbox-toggle:hover {
+  transform: scale(1.1);
+  box-shadow: 0 12px 32px var(--glow-1);
+}
+
+.chatbox-toggle:active {
+  transform: scale(0.95);
+}
+
+/* Chat Window */
+.chatbox-window {
+  position: fixed;
+  bottom: 100px;
+  right: 20px;
+  width: 420px;
+  max-width: 90vw;
+  height: 520px;
+  background: var(--surface);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px) scale(0.95);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.chatbox-window.open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+
+.chatbox-window.closed {
+  display: none;
+}
+
+/* Header */
+.chatbox-header {
+  background: var(--accent);
+  color: white;
+  padding: 18px 20px;
+  border-radius: 20px 20px 0 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+}
+
+.chatbox-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.chatbox-close {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 28px;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.chatbox-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: rotate(90deg);
+}
+
+/* Messages Area */
+.chatbox-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: linear-gradient(180deg, var(--surface) 0%, var(--surface-light) 100%);
+}
+
+/* Message */
+.message {
+  display: flex;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.message.user {
+  justify-content: flex-end;
+}
+
+.message.ai {
+  justify-content: flex-start;
+}
+
+.message-content {
+  max-width: 70%;
+  padding: 10px 14px;
+  border-radius: 12px;
+  word-wrap: break-word;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.message.user .message-content {
+  background: var(--accent);
+  color: white;
+  border-bottom-right-radius: 4px;
+  box-shadow: 0 4px 12px var(--accent-soft);
+}
+
+.message.ai .message-content {
+  background: var(--surface-light);
+  backdrop-filter: blur(10px);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-bottom-left-radius: 4px;
+}
+
+.message-content p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.message-time {
+  font-size: 12px;
+  opacity: 0.7;
+  margin-top: 2px;
+}
+
+.message.user .message-time {
+  opacity: 0.9;
+}
+
+.timeout-notice {
+  font-size: 12px;
+  font-style: italic;
+  opacity: 0.8;
+  margin-top: 6px;
+  display: block;
+}
+
+/* Typing Indicator */
+.typing-indicator {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  height: 20px;
+}
+
+.typing-indicator span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--muted);
+  animation: typing 1.4s infinite;
+}
+
+.typing-indicator span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-indicator span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes typing {
+  0%, 60%, 100% {
+    opacity: 0.5;
+    transform: translateY(0);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-8px);
+  }
+}
+
+/* Input Area */
+.chatbox-input-area {
+  padding: 14px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 10px;
+  background: var(--surface);
+  border-radius: 0 0 20px 20px;
+}
+
+.chatbox-input {
+  flex: 1;
+  padding: 11px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: inherit;
+  resize: none;
+  max-height: 80px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  color: #f0f4ff;
+  transition: all 0.3s ease;
+}
+
+.chatbox-input::placeholder {
+  color: rgba(160, 174, 192, 0.6);
+}
+
+.chatbox-input:focus {
+  outline: none;
+  border-color: var(--border);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.chatbox-send {
+  padding: 11px 18px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+  box-shadow: 0 4px 12px var(--accent-soft);
+}
+
+.chatbox-send:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px var(--glow-1);
+}
+
+.chatbox-send:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.chatbox-send:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Scrollbar */
+.chatbox-messages::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chatbox-messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chatbox-messages::-webkit-scrollbar-thumb {
+  background: var(--accent-soft);
+  border-radius: 3px;
+}
+
+.chatbox-messages::-webkit-scrollbar-thumb:hover {
+  background: var(--glow-1);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .chatbox-container {
+    bottom: 10px;
+    right: 10px;
+  }
+
+  .chatbox-window {
+    bottom: 80px;
+    right: 10px;
+    width: calc(100vw - 20px);
+    height: 400px;
+  }
+
+  .message-content {
+    max-width: 85%;
+  }
+
+  .chatbox-toggle {
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+  }
+}

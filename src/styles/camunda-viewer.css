@@ -1,0 +1,428 @@
+/* Premium Dark Mode Styles for Processing Workflow Modal */
+
+.camunda-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.camunda-modal {
+  width: 96%;
+  max-width: 1400px; /* Slightly wider to accommodate side-by-side split view */
+  height: 88%;
+  background: var(--bg-light); /* Deep slate background matching premium dark aesthetic */
+  border-radius: 28px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+  border: 1px solid var(--border);
+}
+
+.camunda-header {
+  min-height: 86px;
+  padding: 0 28px;
+  background: linear-gradient(90deg, var(--surface-header), var(--bg-light));
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  border-bottom: 1px solid var(--border);
+}
+
+.camunda-header h3 {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.camunda-header small {
+  display: block;
+  margin-top: 6px;
+  opacity: 0.75;
+  font-size: 0.88rem;
+  color: #a8b5d1;
+}
+
+.close-btn {
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  font-size: 16px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: rotate(90deg);
+}
+
+.close-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.process-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  padding: 16px 28px;
+  background: rgba(30, 41, 59, 0.3);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  color: #fff;
+}
+
+.process-banner h4 {
+  margin: 4px 0 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+.process-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.process-status {
+  color: #94a3b8;
+  font-size: 0.88rem;
+  text-align: right;
+}
+
+/* Flex Split Layout (BPMN Left, Timeline Right) */
+.camunda-content.split-view {
+  flex: 1;
+  display: flex;
+  gap: 24px;
+  min-height: 0;
+  padding: 24px;
+  background: var(--bg-light);
+}
+
+/* Left side wrap for diagram */
+.bpmn-wrap {
+  flex: 7;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: 24px;
+  background: #ffffff; /* Clean white canvas for BPMN svg rendering */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 16px; /* Safe padding from borders */
+}
+
+.bpmn-container {
+  width: 100%;
+  height: 100%;
+  background: #ffffff;
+}
+
+/* Right side panel for timeline history */
+.timeline-panel {
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--surface-card);
+  backdrop-filter: blur(12px);
+  border-radius: 24px;
+  border: 1px solid var(--border);
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.timeline-panel h5 {
+  margin: 0 0 16px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 12px;
+}
+
+.timeline-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding-left: 16px; /* Offset to prevent timeline-flow clipping on the left */
+  padding-right: 8px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+}
+
+.timeline-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+.timeline-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.timeline-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+}
+.timeline-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.timeline-loading-status,
+.timeline-error-status,
+.timeline-empty-status {
+  min-height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  font-size: 0.94rem;
+  border: 1px dashed rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+}
+
+.timeline-error-status {
+  color: #f87171;
+}
+
+/* Vertical Tree Timeline */
+.timeline-flow {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding-left: 20px;
+}
+
+.timeline-flow::before {
+  content: '';
+  position: absolute;
+  left: 0; /* Line positioned relative to timeline-flow padding box */
+  top: 12px;
+  bottom: 12px;
+  width: 2px;
+  background: var(--border);
+}
+
+.timeline-node {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.timeline-node:last-child {
+  margin-bottom: 0;
+}
+
+.timeline-marker {
+  position: absolute;
+  left: -25px; /* Center aligned on the left: 0 line (-20px padding - 5px half marker width) */
+  top: 6px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--text-secondary);
+  border: 2px solid var(--bg-light);
+  box-shadow: 0 0 0 2px var(--border);
+}
+
+/* Highlight the latest activity (first node) */
+.timeline-node:first-child .timeline-marker {
+  background: #10b981;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.3);
+}
+
+.timeline-node-content {
+  background: var(--surface-light);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 12px 14px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.timeline-node-content:hover {
+  background: var(--surface-strong);
+  border-color: var(--accent-soft);
+  transform: translateX(4px);
+}
+
+.timeline-time {
+  font-size: 0.76rem;
+  color: #64748b;
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.timeline-action {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #f1f5f9;
+  margin-bottom: 4px;
+  line-height: 1.3;
+}
+
+.timeline-user {
+  font-size: 0.82rem;
+  color: #94a3b8;
+}
+
+.timeline-user strong {
+  color: #e2e8f0;
+}
+
+.timeline-status {
+  font-size: 0.82rem;
+  color: #94a3b8;
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.status-tag {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.status-tag.approved {
+  background: rgba(16, 185, 129, 0.12);
+  color: #34d399;
+}
+
+.status-tag.pending {
+  background: rgba(245, 158, 11, 0.12);
+  color: #fbbf24;
+}
+
+.status-tag.rejected {
+  background: rgba(239, 68, 68, 0.12);
+  color: #f87171;
+}
+
+.status-tag.draft {
+  background: rgba(59, 130, 246, 0.12);
+  color: #60a5fa;
+}
+
+/* Viewer Action Panel at the bottom */
+.viewer-actions {
+  padding: 16px 28px 24px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  border-top: 1px solid var(--border);
+  background: var(--surface-light);
+}
+
+.viewer-actions button {
+  min-width: 140px;
+}
+
+.history-empty {
+  min-height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-light);
+  border: 1px dashed var(--border);
+  color: var(--muted);
+  width: 100%;
+}
+
+/* =========================
+   BPMN HIGHLIGHTS
+   ========================= */
+@keyframes bpmn-pulse-running {
+  0% {
+    stroke-width: 1.8px;
+    filter: drop-shadow(0 0 2px rgba(254, 240, 138, 0.15));
+  }
+  50% {
+    stroke-width: 2.3px;
+    filter: drop-shadow(0 0 5px rgba(254, 240, 138, 0.35));
+  }
+  100% {
+    stroke-width: 1.8px;
+    filter: drop-shadow(0 0 2px rgba(254, 240, 138, 0.15));
+  }
+}
+
+@keyframes bpmn-pulse-error {
+  0% {
+    stroke-width: 1.8px;
+    filter: drop-shadow(0 0 2px rgba(252, 165, 165, 0.2));
+  }
+  50% {
+    stroke-width: 2.3px;
+    filter: drop-shadow(0 0 5px rgba(252, 165, 165, 0.4));
+  }
+  100% {
+    stroke-width: 1.8px;
+    filter: drop-shadow(0 0 2px rgba(252, 165, 165, 0.2));
+  }
+}
+
+g.djs-element.highlight-running > g.djs-visual > * {
+  fill: rgba(254, 240, 138, 0.03) !important;
+  stroke: #fef08a !important;
+  stroke-width: 1.8px !important;
+  animation: bpmn-pulse-running 2s infinite ease-in-out;
+}
+
+g.djs-element.highlight-error > g.djs-visual > * {
+  fill: rgba(252, 165, 165, 0.03) !important;
+  stroke: #fca5a5 !important;
+  stroke-width: 1.8px !important;
+  animation: bpmn-pulse-error 2s infinite ease-in-out;
+}
+
+g.djs-element.highlight-done > g.djs-visual > * {
+  fill: rgba(167, 243, 208, 0.04) !important;
+  stroke: #a7f3d0 !important;
+  stroke-width: 1.5px !important;
+  filter: drop-shadow(0 0 3px rgba(167, 243, 208, 0.2));
+}
+
+g.djs-element.highlight-end > g.djs-visual > * {
+  fill: rgba(134, 239, 172, 0.05) !important;
+  stroke: #86efac !important;
+  stroke-width: 2px !important;
+  filter: drop-shadow(0 0 5px rgba(134, 239, 172, 0.3));
+}
+
+g.djs-element.highlight-flow > g.djs-connection > * {
+  stroke-width: 2.5px !important;
+}
+
+/* Modal PDF viewer sizing styles */
+.camunda-content > .wide-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  width: 100%;
+}
+
+.camunda-content .pdf-viewer-container {
+  flex: 1;
+  height: 100% !important;
+  max-height: 100% !important;
+}

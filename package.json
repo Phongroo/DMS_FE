@@ -1,0 +1,39 @@
+{
+  "name": "dms-approval-ui",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node -r ./vite-polyfill.cjs ./node_modules/vite/bin/vite.js",
+    "build": "node -r ./vite-polyfill.cjs ./node_modules/vite/bin/vite.js build",
+    "preview": "node -r ./vite-polyfill.cjs ./node_modules/vite/bin/vite.js preview",
+    "serve": "node server.js",
+    "start": "node -r ./vite-polyfill.cjs ./node_modules/vite/bin/vite.js"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^6.3.2",
+    "@google/genai": "^2.8.0",
+    "@stomp/stompjs": "^7.0.0",
+    "antd": "^6.5.0",
+    "bcryptjs": "^2.4.3",
+    "bpmn-js": "^18.16.1",
+    "chart.js": "^4.4.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.4",
+    "jsonwebtoken": "^9.0.2",
+    "jspdf": "^4.2.1",
+    "openai": "^4.52.0",
+    "react": "^18.3.1",
+    "react-chartjs-2": "^5.2.0",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.18.2",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
+    "sockjs-client": "^1.6.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "vite": "^5.4.1"
+  }
+}
