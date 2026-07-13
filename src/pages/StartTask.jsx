@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Select } from 'antd';
 import { jsPDF } from 'jspdf';
 
-const API_BASE_URL = import.meta.env.VITE_AUTH_URL || 'http://localhost:30080';
+const API_BASE_URL = import.meta.env.VITE_AUTH_URL || 'https://dms-api-b25o.onrender.com';
 
 // Utility to get current date formatted as DD/MM/YYYY
 const getCurrentFormattedDate = () => {

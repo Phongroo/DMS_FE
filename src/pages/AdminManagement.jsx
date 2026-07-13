@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { Select, message } from 'antd';
 import '../styles/admin-management.css';
 
-const ADMIN_API_BASE_URL = import.meta.env.VITE_AUTH_URL || 'http://localhost:30080';
+const ADMIN_API_BASE_URL = import.meta.env.VITE_AUTH_URL || 'https://dms-api-b25o.onrender.com';
 
 // Pre-configured mock backup data for offline resilience
 const MOCK_USERS = [
@@ -50,7 +50,7 @@ function AdminManagement({ user, token, branches: propBranches }) {
   });
 
   const [settings, setSettings] = useState({
-    camundaUrl: 'http://localhost:30080/engine-rest',
+    camundaUrl: 'https://dms-api-b25o.onrender.com/engine-rest',
     socketUrl: 'http://localhost:4000',
     requireSignature: true,
     autoNotification: false,

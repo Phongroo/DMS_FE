@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import ApprovalPanel from '../components/ApprovalPanel.jsx';
 
-const API_BASE_URL = import.meta.env.VITE_AUTH_URL || 'http://localhost:30080';
+const API_BASE_URL = import.meta.env.VITE_AUTH_URL || 'https://dms-api-b25o.onrender.com';
 
 function Approvals({ token, position, onApprove }) {
   const [tasks, setTasks] = useState([]);

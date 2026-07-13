@@ -26,7 +26,7 @@ function ChatBox({ token }) {
   const messagesEndRef = useRef(null);
   const timeoutRef = useRef(null);
 
-  const AI_CHAT = 'http://localhost:30080/api/chat';
+  const AI_CHAT = 'https://dms-api-b25o.onrender.com/api/chat';
 
   // Auto scroll to bottom
   useEffect(() => {

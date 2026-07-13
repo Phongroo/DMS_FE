@@ -4,7 +4,7 @@ import { createPortal } from 'react-dom';
 import '../styles/camunda-viewer.css';
 import PDFViewer from './PDFViewer.jsx';
 
-const API_BASE_URL = import.meta.env.VITE_AUTH_URL || 'http://localhost:30080';
+const API_BASE_URL = import.meta.env.VITE_AUTH_URL || 'https://dms-api-b25o.onrender.com';
 const statusClasses = {
   DIRECTOR_REJECTED: 'rejected',
   DIRECTOR_APPROVED: 'approved',

@@ -43,7 +43,7 @@ ChartJS.register(
   Filler
 );
 
-const ADMIN_API_BASE_URL = import.meta.env.VITE_AUTH_URL || 'http://localhost:30080';
+const ADMIN_API_BASE_URL = import.meta.env.VITE_AUTH_URL || 'https://dms-api-b25o.onrender.com';
 
 const DEFAULT_MENUS = [
   { key: 'home', label: 'Tổng quan', path: '/', defaultRoles: ['ADMIN', 'NORMAL'] },
@@ -82,7 +82,7 @@ function SystemAdminPanel({ user, token, currentTheme, setTheme }) {
   // --- API State ---
   const [loading, setLoading] = useState(false);
   const [settings, setSettings] = useState({
-    camundaUrl: 'http://localhost:30080/engine-rest',
+    camundaUrl: 'https://dms-api-b25o.onrender.com/engine-rest',
     socketHost: 'http://localhost:4000',
     apiTimeout: 5000,
     requireDigitalSignature: false,

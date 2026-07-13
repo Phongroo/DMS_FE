@@ -154,7 +154,7 @@ const PRESET_DOCUMENTS = [
   }
 ];
 
-const API_BASE_URL = import.meta.env.VITE_AUTH_URL || 'http://localhost:30080';
+const API_BASE_URL = import.meta.env.VITE_AUTH_URL || 'https://dms-api-b25o.onrender.com';
 
 function PDFViewer({ defaultPdfUrl, defaultDocTitle, defaultDocId, token }) {
   const initialDoc = useMemo(() => {

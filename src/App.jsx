@@ -73,7 +73,7 @@ const themeConfigMap = {
 };
 
 const seasons = ['spring', 'summer', 'autumn', 'winter'];
-const AUTH_BASE_URL = import.meta.env.VITE_AUTH_URL || 'http://localhost:30080';
+const AUTH_BASE_URL = import.meta.env.VITE_AUTH_URL || 'https://dms-api-b25o.onrender.com';
 
 function App() {
   const [theme, setTheme] = useState('spring');

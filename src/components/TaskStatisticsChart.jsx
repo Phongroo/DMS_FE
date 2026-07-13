@@ -28,7 +28,7 @@ ChartJS.register(
   Filler
 );
 
-const ANALYTICS_API_BASE_URL = import.meta.env.VITE_AUTH_URL || 'http://localhost:30080';
+const ANALYTICS_API_BASE_URL = import.meta.env.VITE_AUTH_URL || 'https://dms-api-b25o.onrender.com';
 
 // Backup Mock data payload matching the API schema for resilience
 const BACKUP_ANALYTICS = {
