@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs';
 
-const SOCKET_URL = 'http://localhost:30090/ws';
+const SOCKET_URL = 'https://socket-st9y.onrender.com/ws';
 
 export function useSocket(position, onTaskReceived) {
   const clientRef = useRef(null);
