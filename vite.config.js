@@ -9,5 +9,12 @@ export default defineConfig({
   server: {
     port: 5173,
     open: true
+  },
+  build: {
+    sourcemap: false,
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      maxParallelFileOps: 2
+    }
   }
 });

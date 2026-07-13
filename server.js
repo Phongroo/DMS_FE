@@ -5,9 +5,14 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import OpenAI from 'openai';
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 // Load environment variables
 dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const server = http.createServer(app);
@@ -72,6 +77,7 @@ const users = [
 ];
 
 app.use(express.json());
+app.use(express.static(path.join(__dirname, 'dist')));
 
 app.post('/generate-token', async (req, res) => {
   const { username, password } = req.body;
@@ -140,6 +146,11 @@ app.post('/api/chat', async (req, res) => {
       error: 'Xin lỗi, có lỗi xảy ra khi xử lý yêu cầu.'
     });
   }
+});
+
+// Wildcard route to serve index.html for Single Page Application (SPA) routing fallback
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
 // Gemini Chat Handler
