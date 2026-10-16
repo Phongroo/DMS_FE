@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 
-const API_BASE_URL = import.meta.env.VITE_AUTH_URL || 'https://dms-api-b25o.onrender.com';
+const API_BASE_URL = import.meta.env.VITE_AUTH_URL || 'http://192.168.42.243:8080';
 
 /**
  * @typedef {Object} TaskItem
@@ -14,7 +14,7 @@ const API_BASE_URL = import.meta.env.VITE_AUTH_URL || 'https://dms-api-b25o.onre
 /**
  * ApprovalPanel component.
  * Renders lists of waiting document profiles and hosts logic for manager/director sign-offs.
- * 
+ *
  * @component
  * @param {Object} props - Component properties.
  * @param {string} props.position - Current active role tier designation (e.g. 'admin', 'manager', 'director').

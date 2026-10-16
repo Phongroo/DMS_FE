@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import ThemeSwitcher from './ThemeSwitcher.jsx';
 import { Button, Layout, Badge, Popover, List } from 'antd';
-import { LogoutOutlined, BellOutlined } from '@ant-design/icons';
+import { LogoutOutlined, BellOutlined, MenuOutlined } from '@ant-design/icons';
 
 const { Header: AntdHeader } = Layout;
 
@@ -17,9 +17,10 @@ const { Header: AntdHeader } = Layout;
  * @param {function(): void} props.onLogout - Callback to handle logging out the user session.
  * @param {Object[]} props.notifications - Active unread notifications list.
  * @param {function(Object[]): void} props.setNotifications - Callback to update notification states.
+ * @param {function(): void} props.onToggleMenu - Callback to toggle mobile Drawer sidebar.
  * @returns {React.ReactElement} The styled header container.
  */
-function Header({ user, theme, setTheme, seasons, onLogout, notifications = [], setNotifications }) {
+function Header({ user, theme, setTheme, seasons, onLogout, notifications = [], setNotifications, onToggleMenu }) {
   const [popoverVisible, setPopoverVisible] = useState(false);
   const userDisplayName = user?.firstName ?? user?.username;
   const userRole = user?.authorities?.[0]?.authority ?? 'NORMAL';
@@ -106,11 +107,20 @@ function Header({ user, theme, setTheme, seasons, onLogout, notifications = [], 
         borderRadius: 0
       }}
     >
-      <div className="header-left">
-        <h2 style={{ margin: '0 0 4px', fontSize: '1.25rem', color: 'var(--text)', fontWeight: 700 }}>Xin chào, {userDisplayName}</h2>
-        <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--muted)' }}>
-          Quyền hạn: <strong style={{ color: 'var(--text)' }}>{userRole}</strong> • Vị trí: <strong style={{ color: 'var(--text)' }}>{userPosition}</strong>
-        </p>
+      <div className="header-left" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <Button 
+          type="text" 
+          icon={<MenuOutlined />} 
+          onClick={onToggleMenu}
+          className="mobile-menu-btn"
+          style={{ fontSize: '1.25rem', color: 'var(--text)', padding: 0, width: '40px', height: '40px', display: 'none', alignItems: 'center', justifyContent: 'center' }}
+        />
+        <div>
+          <h2 style={{ margin: '0 0 4px', fontSize: '1.25rem', color: 'var(--text)', fontWeight: 700 }}>Xin chào, {userDisplayName}</h2>
+          <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--muted)' }}>
+            Quyền hạn: <strong style={{ color: 'var(--text)' }}>{userRole}</strong> • Vị trí: <strong style={{ color: 'var(--text)' }}>{userPosition}</strong>
+          </p>
+        </div>
       </div>
 
       <div className="header-right" style={{ display: 'flex', alignItems: 'center', gap: '18px' }}>
@@ -137,9 +147,9 @@ function Header({ user, theme, setTheme, seasons, onLogout, notifications = [], 
           icon={<LogoutOutlined />} 
           onClick={onLogout}
           className="logout-button"
-          style={{ height: '42px', borderRadius: '10px', fontWeight: 600 }}
+          style={{ height: '42px', borderRadius: '10px', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
         >
-          Đăng xuất
+          <span className="logout-text">Đăng xuất</span>
         </Button>
       </div>
     </AntdHeader>

@@ -53,7 +53,7 @@ const iconMap = {
  * @param {UserInfo} props.user - Information payload of current logged-in user.
  * @returns {React.ReactElement} The rendered Sider navigation panel.
  */
-function Sidebar({ menu, user }) {
+function Sidebar({ menu, user, isMobile, onClose }) {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -99,7 +99,12 @@ function Sidebar({ menu, user }) {
           <Menu
             mode="inline"
             selectedKeys={[location.pathname]}
-            onClick={({ key }) => navigate(key)}
+            onClick={({ key }) => {
+              navigate(key);
+              if (isMobile && onClose) {
+                onClose();
+              }
+            }}
             items={menuItems}
             style={{ border: 'none', background: 'transparent', width: '100%' }}
           />

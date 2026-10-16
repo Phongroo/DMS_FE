@@ -4,7 +4,7 @@ import '../styles/chatbox.css';
 /**
  * AI Assistant Chat Widget Component.
  * Supports direct message submissions to an LLM back-end proxy with auto-scrolling log timeline.
- * 
+ *
  * @component
  * @param {Object} props - Component properties.
  * @param {string} props.token - JWT token credential used to authorize API calls against chat endpoints.
@@ -26,7 +26,7 @@ function ChatBox({ token }) {
   const messagesEndRef = useRef(null);
   const timeoutRef = useRef(null);
 
-  const AI_CHAT = 'https://dms-api-b25o.onrender.com/api/chat';
+  const AI_CHAT = 'https://http://192.168.42.243:8080/api/chat';
 
   // Auto scroll to bottom
   useEffect(() => {
@@ -57,7 +57,7 @@ function ChatBox({ token }) {
 
     try {
         console.log('Sending message to AI:', token, messageText);
- 
+
       // Call API endpoint instead of socket
           const response = await fetch(`${AI_CHAT}`, {
         method: 'POST',

@@ -28,7 +28,7 @@ ChartJS.register(
   Filler
 );
 
-const ANALYTICS_API_BASE_URL = import.meta.env.VITE_AUTH_URL || 'https://dms-api-b25o.onrender.com';
+const ANALYTICS_API_BASE_URL = import.meta.env.VITE_AUTH_URL || 'http://192.168.42.243:8080';
 
 // Backup Mock data payload matching the API schema for resilience
 const BACKUP_ANALYTICS = {
@@ -118,11 +118,11 @@ function TaskStatisticsChart({ token }) {
   const [loading, setLoading] = useState(true);
   const [isOffline, setIsOffline] = useState(false);
   const [bottlenecksPage, setBottlenecksPage] = useState(1);
-  
+
   // New interactive filters state
   const [docTypeFilter, setDocTypeFilter] = useState('ALL');
   const [timeRange, setTimeRange] = useState('7d');
-  
+
   const ITEMS_PER_PAGE = 2;
 
   // Format currency numbers
@@ -155,10 +155,10 @@ function TaskStatisticsChart({ token }) {
         });
 
         if (!response.ok) throw new Error('Analytics API response error');
-        
+
         const payload = await response.json();
         const apiData = payload.data || payload;
-        
+
         if (apiData && apiData.overview) {
           setAnalytics(apiData);
           setIsOffline(false);
@@ -181,23 +181,23 @@ function TaskStatisticsChart({ token }) {
     let overview = { ...analytics.overview };
     let stepDurations = [...(analytics.stepDurations || [])];
     let bottlenecks = [...(analytics.bottlenecks || [])];
-    
+
     // Scale and filter data if docType is selected
     if (docTypeFilter !== 'ALL') {
       const factor = docTypeFilter === 'CONTRACT' ? 0.6 : docTypeFilter === 'PROPOSAL' ? 0.3 : 0.15;
-      
+
       overview.totalProcessesStarted = Math.max(1, Math.round(overview.totalProcessesStarted * factor));
       overview.completedProcesses = Math.max(1, Math.round(overview.completedProcesses * factor));
       overview.activeProcesses = Math.max(0, Math.round(overview.activeProcesses * factor));
       overview.approvalRatePercentage = Math.min(100, Math.round(overview.approvalRatePercentage * (0.95 + Math.random() * 0.05)));
-      
+
       // Filter list of bottlenecks
       bottlenecks = bottlenecks.filter(b => {
         if (docTypeFilter === 'CONTRACT') return b.status.includes('CONTRACT') || b.docId.includes('CONTRACT') || b.taskName.includes('Manager') || b.taskName.includes('Director');
         if (docTypeFilter === 'PROPOSAL') return b.status.includes('PROPOSAL') || b.taskName.includes('Legal');
         return b.status.includes('FINANCE') || b.taskName.includes('Finance') || b.taskName.includes('Audit');
       });
-      
+
       // Adjust doughnut segments
       if (docTypeFilter === 'CONTRACT') {
         overview.localDocsApprovedCount = 6;
@@ -216,7 +216,7 @@ function TaskStatisticsChart({ token }) {
         overview.localDocsDraftCount = 0;
       }
     }
-    
+
     return { overview, stepDurations, bottlenecks };
   }, [analytics, docTypeFilter]);
 
@@ -246,25 +246,25 @@ function TaskStatisticsChart({ token }) {
 
   // CSV Exporter Action
   const exportCSVReport = () => {
-    let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; 
+    let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
     csvContent += "BAO CAO THONG KE HE THONG DMS\n";
     csvContent += `Ngay xuat: ${getCurrentFormattedDate()}\n`;
     csvContent += `Bo loc tai lieu: ${docTypeFilter}\n`;
     csvContent += `Bo loc thoi gian: ${timeRange === '7d' ? '7 ngay qua' : timeRange === '30d' ? '30 ngay qua' : 'Thang nay'}\n\n`;
-    
+
     csvContent += "1. CHI SO TONG QUAN\n";
     csvContent += `Tong quy trinh chay,${filteredData.overview.totalProcessesStarted}\n`;
     csvContent += `Quy trinh da hoan thanh,${filteredData.overview.completedProcesses}\n`;
     csvContent += `Quy trinh dang chay,${filteredData.overview.activeProcesses}\n`;
     csvContent += `Ty le phe duyet dat,${filteredData.overview.approvalRatePercentage}%\n\n`;
-    
+
     csvContent += "2. DANH SACH DIEM NGHEN SLA\n";
     csvContent += "Ma tai lieu,Buoc cong viec,Nguoi duoc gan,Thoi gian ngam (Gio),Nguong SLA (Gio),Nguoi khoi tao,Trang thai\n";
-    
+
     filteredData.bottlenecks.forEach(b => {
       csvContent += `"${b.docId}","${b.taskName}","${b.assignee}",${b.pendingDurationHours},${b.slaThresholdHours},"${b.createdBy}","QUA HAN SLA"\n`;
     });
-    
+
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
@@ -522,7 +522,7 @@ function TaskStatisticsChart({ token }) {
       <div className="analytics-filter-row" style={{ display: 'flex', gap: '16px', marginBottom: '24px', flexWrap: 'wrap', alignItems: 'center' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
           <span style={{ fontSize: '0.8rem', color: 'var(--muted)', fontWeight: 600 }}>Loại tài liệu</span>
-          <Select 
+          <Select
             style={{ width: '180px' }}
             value={docTypeFilter}
             onChange={(val) => setDocTypeFilter(val)}
@@ -537,7 +537,7 @@ function TaskStatisticsChart({ token }) {
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
           <span style={{ fontSize: '0.8rem', color: 'var(--muted)', fontWeight: 600 }}>Thời gian báo cáo</span>
-          <Select 
+          <Select
             style={{ width: '180px' }}
             value={timeRange}
             onChange={(val) => setTimeRange(val)}
@@ -550,8 +550,8 @@ function TaskStatisticsChart({ token }) {
         </div>
 
         <div style={{ marginLeft: 'auto', alignSelf: 'flex-end' }}>
-          <Button 
-            type="primary" 
+          <Button
+            type="primary"
             onClick={exportCSVReport}
             className="export-button"
             style={{ background: 'var(--accent)', borderColor: 'var(--accent)', fontWeight: 600, height: '38px', borderRadius: '10px' }}
@@ -590,7 +590,7 @@ function TaskStatisticsChart({ token }) {
       <div className="chart-card" style={{ marginBottom: '24px', gridColumn: 'span 2' }}>
         <h4>Xu hướng hoạt động phê duyệt tài liệu</h4>
         <div className="chart-wrapper" style={{ height: '300px' }}>
-          <Line 
+          <Line
             data={processTrendData}
             options={lineChartOptions}
           />
@@ -670,7 +670,7 @@ function TaskStatisticsChart({ token }) {
                 Hiển thị {Math.min(totalBottlenecks, (bottlenecksPage - 1) * ITEMS_PER_PAGE + 1)} - {Math.min(totalBottlenecks, bottlenecksPage * ITEMS_PER_PAGE)} trong tổng số {totalBottlenecks} điểm nghẽn
               </div>
               <div className="analytics-paginator-buttons">
-                <button 
+                <button
                   className="analytics-page-btn"
                   disabled={bottlenecksPage <= 1}
                   onClick={() => setBottlenecksPage(prev => prev - 1)}
@@ -690,7 +690,7 @@ function TaskStatisticsChart({ token }) {
                      </button>
                   );
                 })}
-                <button 
+                <button
                   className="analytics-page-btn"
                   disabled={bottlenecksPage >= totalPages}
                   onClick={() => setBottlenecksPage(prev => prev + 1)}

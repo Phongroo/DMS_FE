@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-const AUTH_BASE_URL = import.meta.env.VITE_AUTH_URL || 'https://dms-api-b25o.onrender.com';
+const AUTH_BASE_URL = import.meta.env.VITE_AUTH_URL || 'http://192.168.42.243:8080';
 
 function Login({ onLogin }) {
   const [username, setUsername] = useState('hongphong');

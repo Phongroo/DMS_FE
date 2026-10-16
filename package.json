@@ -5,10 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "node -r ./vite-polyfill.cjs ./node_modules/vite/bin/vite.js",
-    "build": "node --max-old-space-size=400 -r ./vite-polyfill.cjs ./node_modules/vite/bin/vite.js build",
+    "build": "node -r ./vite-polyfill.cjs ./node_modules/vite/bin/vite.js build",
     "preview": "node -r ./vite-polyfill.cjs ./node_modules/vite/bin/vite.js preview",
-    "serve": "node --max-old-space-size=400 server.js",
-    "start": "node --max-old-space-size=400 server.js"
+    "serve": "node server.js",
+    "start": "node server.js"
   },
   "dependencies": {
     "@ant-design/icons": "^6.3.2",

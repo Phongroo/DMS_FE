@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Select } from 'antd';
 import { jsPDF } from 'jspdf';
 
-const API_BASE_URL = import.meta.env.VITE_AUTH_URL || 'https://dms-api-b25o.onrender.com';
+const API_BASE_URL = import.meta.env.VITE_AUTH_URL || 'http://192.168.42.243:8080';
 
 // Utility to get current date formatted as DD/MM/YYYY
 const getCurrentFormattedDate = () => {
@@ -55,27 +55,27 @@ const numberToVietnameseWords = (numStr) => {
   const num = parseInt(cleanNumStr, 10);
   if (isNaN(num)) return '';
   if (num === 0) return 'Không đồng';
-  
+
   const units = ['', 'nghìn', 'triệu', 'tỷ', 'nghìn tỷ', 'triệu tỷ'];
   const digits = ['không', 'một', 'hai', 'ba', 'bốn', 'năm', 'sáu', 'bảy', 'tám', 'chín'];
-  
+
   const readThreeDigits = (n, showZero) => {
     let hundred = Math.floor(n / 100);
     let ten = Math.floor((n % 100) / 10);
     let unit = n % 10;
     let res = '';
-    
+
     if (hundred > 0 || showZero) {
       res += digits[hundred] + ' trăm ';
     }
-    
+
     if (ten > 0) {
       if (ten === 1) res += 'mười ';
       else res += digits[ten] + ' mươi ';
     } else if (hundred > 0 && unit > 0) {
       res += 'lẻ ';
     }
-    
+
     if (unit > 0) {
       if (unit === 1 && ten > 1) res += 'mốt';
       else if (unit === 5 && ten > 0) res += 'lăm';
@@ -83,14 +83,14 @@ const numberToVietnameseWords = (numStr) => {
     }
     return res.trim();
   };
-  
+
   let temp = num;
   let groups = [];
   while (temp > 0) {
     groups.push(temp % 1000);
     temp = Math.floor(temp / 1000);
   }
-  
+
   let words = '';
   for (let i = groups.length - 1; i >= 0; i--) {
     const g = groups[i];
@@ -100,7 +100,7 @@ const numberToVietnameseWords = (numStr) => {
       words += gText + ' ' + units[i] + ' ';
     }
   }
-  
+
   let result = words.trim().replace(/\s+/g, ' ');
   if (result) {
     result = result.charAt(0).toUpperCase() + result.slice(1) + ' đồng chẵn';
@@ -112,20 +112,20 @@ const numberToVietnameseWords = (numStr) => {
 const extractJsonFromText = (text) => {
   if (!text) return null;
   let jsonString = text.trim();
-  
+
   if (jsonString.includes('```')) {
     const match = jsonString.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
     if (match && match[1]) {
       jsonString = match[1].trim();
     }
   }
-  
+
   const firstBrace = jsonString.indexOf('{');
   const lastBrace = jsonString.lastIndexOf('}');
   if (firstBrace !== -1 && lastBrace !== -1) {
     jsonString = jsonString.substring(firstBrace, lastBrace + 1);
   }
-  
+
   try {
     return JSON.parse(jsonString);
   } catch (e) {
@@ -140,7 +140,7 @@ function StartTask({ token, user }) {
   const [uploadDocType, setUploadDocType] = useState(''); // Case A docType (optional)
   const [uploadEmail, setUploadEmail] = useState(user?.email || ''); // Case A email (required)
   const [docType, setDocType] = useState('CONTRACT'); // Case B docType (required)
-  
+
   const [templateData, setTemplateData] = useState(getInitialTemplateData(user));
 
   const [submitting, setSubmitting] = useState(false);
@@ -195,7 +195,7 @@ function StartTask({ token, user }) {
         [docType]: updated
       };
     });
-    
+
     // Clear validation error for this field
     setValidationErrors(prev => ({ ...prev, [field]: false }));
     setResult(null);
@@ -250,7 +250,7 @@ function StartTask({ token, user }) {
       const currentData = templateData[docType];
       for (const key in currentData) {
         if (key === 'amountInWords') continue; // auto-computed & disabled
-        
+
         if (typeof currentData[key] === 'string' && !currentData[key].trim()) {
           errors[key] = true;
         }
@@ -341,7 +341,7 @@ LƯU Ý QUAN TRỌNG: Chỉ trả về duy nhất một khối JSON thô bắt �
             count++;
           }
         }
-        
+
         // Auto update amountInWords if amount was updated by AI
         if (parsedData.amount !== undefined && parsedData.amount !== null && String(parsedData.amount).trim() !== '') {
           updated.amountInWords = numberToVietnameseWords(String(parsedData.amount));
@@ -391,8 +391,8 @@ LƯU Ý QUAN TRỌNG: Chỉ trả về duy nhất một khối JSON thô bắt �
     str = str.replace(/Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ/g, "U");
     str = str.replace(/Ỳ|Ý|Ạ|Ỷ|Ỹ/g, "Y");
     str = str.replace(/Đ/g, "D");
-    str = str.replace(/\u0300|\u0301|\u0303|\u0309|\u0323/g, ""); 
-    str = str.replace(/\u02C6|\u0306|\u031B/g, ""); 
+    str = str.replace(/\u0300|\u0301|\u0303|\u0309|\u0323/g, "");
+    str = str.replace(/\u02C6|\u0306|\u031B/g, "");
     return str;
   };
 
@@ -408,7 +408,7 @@ LƯU Ý QUAN TRỌNG: Chỉ trả về duy nhất một khối JSON thô bắt �
 
     if (type === 'CONTRACT') {
       fileName = `Hop_dong_${(data.partnerName || 'Dich_vu').trim().replace(/\s+/g, '_')}.pdf`;
-      
+
       // Title / Headers
       doc.setFontSize(11);
       doc.setFont("Helvetica", "bold");
@@ -416,96 +416,96 @@ LƯU Ý QUAN TRỌNG: Chỉ trả về duy nhất một khối JSON thô bắt �
       doc.setFont("Helvetica", "normal");
       doc.text(removeVietnameseTones("Độc lập - Tự do - Hạnh phúc"), 105, 26, { align: "center" });
       doc.line(70, 28, 140, 28);
-      
+
       doc.setFontSize(15);
       doc.setFont("Helvetica", "bold");
       doc.text(removeVietnameseTones("HỢP ĐỒNG DỊCH VỤ THƯƠNG MẠI"), 105, 45, { align: "center" });
-      
+
       doc.setFontSize(10);
       doc.setFont("Helvetica", "normal");
       doc.text(removeVietnameseTones(`Hôm nay, ngày ${data.createdDate || getCurrentFormattedDate()}, tại văn phòng DMS Approval Hub.`), 20, 60);
       doc.text(removeVietnameseTones("Chúng tôi gồm các bên ký kết dưới đây:"), 20, 66);
-      
+
       doc.setFont("Helvetica", "bold");
       doc.text(removeVietnameseTones("BÊN A (Bên Đề Xuất):"), 20, 74);
       doc.setFont("Helvetica", "normal");
       doc.text(removeVietnameseTones(`${data.createdBy || '................'} (Email: ${data.email})`), 60, 74);
-      
+
       doc.setFont("Helvetica", "bold");
       doc.text(removeVietnameseTones("BÊN B (Đối Tác):"), 20, 82);
       doc.setFont("Helvetica", "normal");
       doc.text(removeVietnameseTones(`${data.partnerName || '................'}`), 55, 82);
-      
+
       doc.text(removeVietnameseTones("Hai bên đồng ý ký kết hợp đồng dịch vụ thương mại với các điều khoản cụ thể sau:"), 20, 92);
-      
+
       doc.setFont("Helvetica", "bold");
       doc.text(removeVietnameseTones("Điều 1: Nội dung thỏa thuận dịch vụ"), 20, 102);
       doc.setFont("Helvetica", "normal");
       const wrappedTitle = doc.splitTextToSize(removeVietnameseTones(`Thực hiện công việc: ${data.title}`), 170);
       doc.text(wrappedTitle, 20, 108);
-      
+
       const nextY = 108 + (wrappedTitle.length * 6);
       doc.setFont("Helvetica", "bold");
       doc.text(removeVietnameseTones("Điều 2: Giá trị hợp đồng & Phương thức thanh toán"), 20, nextY);
       doc.setFont("Helvetica", "normal");
       doc.text(removeVietnameseTones(`- Tổng giá trị hợp đồng: ${formatNumber(data.amount)} VNĐ`), 20, nextY + 6);
       doc.text(removeVietnameseTones(`- Bằng chữ: ${data.amountInWords}`), 20, nextY + 12);
-      
+
       // Signatures
       doc.setFont("Helvetica", "bold");
       doc.text(removeVietnameseTones("ĐẠI DIỆN BÊN A"), 50, nextY + 36, { align: "center" });
       doc.setFont("Helvetica", "normal");
       doc.text(removeVietnameseTones("(Ký, ghi rõ họ tên)"), 50, nextY + 41, { align: "center" });
-      
+
       doc.setFont("Helvetica", "bold");
       doc.text(removeVietnameseTones("ĐẠI DIỆN BÊN B"), 160, nextY + 36, { align: "center" });
       doc.setFont("Helvetica", "normal");
       doc.text(removeVietnameseTones("(Ký, ghi rõ họ tên)"), 160, nextY + 41, { align: "center" });
     } else if (type === 'PROPOSAL') {
       fileName = `To_trinh_${(data.createdBy || 'De_xuat').trim().replace(/\s+/g, '_')}.pdf`;
-      
+
       doc.setFontSize(11);
       doc.setFont("Helvetica", "bold");
       doc.text(removeVietnameseTones("CÔNG TY DMS APPROVAL HUB"), 20, 20);
       doc.setFont("Helvetica", "normal");
       doc.text(removeVietnameseTones("Số: ..... / TTr - DMS"), 20, 26);
       doc.line(20, 28, 55, 28);
-      
+
       doc.setFontSize(15);
       doc.setFont("Helvetica", "bold");
       doc.text(removeVietnameseTones("TỜ TRÌNH PHÊ DUYỆT"), 105, 45, { align: "center" });
-      
+
       doc.setFontSize(10);
       doc.setFont("Helvetica", "normal");
       doc.text(removeVietnameseTones("Kính gửi: Ban Giám đốc Công ty DMS Approval Hub"), 105, 58, { align: "center" });
-      
+
       doc.setFont("Helvetica", "bold");
       doc.text(removeVietnameseTones("Người đề xuất:"), 20, 70);
       doc.setFont("Helvetica", "normal");
       doc.text(removeVietnameseTones(data.createdBy), 50, 70);
-      
+
       doc.setFont("Helvetica", "bold");
       doc.text(removeVietnameseTones("Email liên hệ:"), 20, 76);
       doc.setFont("Helvetica", "normal");
       doc.text(removeVietnameseTones(data.email), 50, 76);
-      
+
       doc.setFont("Helvetica", "bold");
       doc.text(removeVietnameseTones("Ngày đề xuất:"), 20, 82);
       doc.setFont("Helvetica", "normal");
       doc.text(removeVietnameseTones(data.createdDate), 50, 82);
-      
+
       doc.text(removeVietnameseTones("Tôi xin trình lên Ban Giám đốc phê duyệt nội dung sau:"), 20, 94);
-      
+
       doc.setFont("Helvetica", "bold");
       doc.text(removeVietnameseTones(`Tiêu đề: ${data.title}`), 20, 102);
       doc.setFont("Helvetica", "normal");
-      
+
       const wrappedContent = doc.splitTextToSize(removeVietnameseTones(data.proposalContent), 170);
       doc.text(wrappedContent, 20, 108);
-      
+
       const nextY = 108 + (wrappedContent.length * 6);
       doc.text(removeVietnameseTones("Kính mong Ban Giám đốc xem xét và cho ý kiến chỉ đạo."), 20, nextY + 10);
-      
+
       doc.setFont("Helvetica", "normal");
       doc.text(removeVietnameseTones(`Hà Nội, ngày ${data.createdDate?.split('/')[0] || '...'} tháng ${data.createdDate?.split('/')[1] || '...'} năm ${data.createdDate?.split('/')[2] || '...'}`), 160, nextY + 28, { align: "center" });
       doc.setFont("Helvetica", "bold");
@@ -514,52 +514,52 @@ LƯU Ý QUAN TRỌNG: Chỉ trả về duy nhất một khối JSON thô bắt �
       doc.text(removeVietnameseTones("(Ký, ghi rõ họ tên)"), 160, nextY + 39, { align: "center" });
     } else {
       fileName = `Phieu_chi_${(data.creatorName || 'Thanh_toan').trim().replace(/\s+/g, '_')}.pdf`;
-      
+
       doc.setFontSize(11);
       doc.setFont("Helvetica", "bold");
       doc.text(removeVietnameseTones("CÔNG TY DMS APPROVAL HUB"), 20, 20);
       doc.setFont("Helvetica", "normal");
       doc.text(removeVietnameseTones("Mẫu số: 02 - TT"), 20, 26);
-      
+
       doc.setFont("Helvetica", "bold");
       doc.text(removeVietnameseTones("Số phiếu: CHI-DMS"), 190, 20, { align: "right" });
-      
+
       doc.setFontSize(15);
       doc.setFont("Helvetica", "bold");
       doc.text(removeVietnameseTones("PHIẾU CHI KIÊM BIÊN NHẬN"), 105, 45, { align: "center" });
       doc.setFontSize(10);
       doc.setFont("Helvetica", "normal");
       doc.text(removeVietnameseTones(`Ngày lập: ${data.createdDate}`), 105, 51, { align: "center" });
-      
+
       doc.setFont("Helvetica", "bold");
       doc.text(removeVietnameseTones("- Họ và tên người nhận tiền:"), 20, 64);
       doc.setFont("Helvetica", "normal");
       doc.text(removeVietnameseTones(data.creatorName), 75, 64);
-      
+
       doc.setFont("Helvetica", "bold");
       doc.text(removeVietnameseTones("- Email liên hệ:"), 20, 72);
       doc.setFont("Helvetica", "normal");
       doc.text(removeVietnameseTones(data.email), 55, 72);
-      
+
       doc.setFont("Helvetica", "bold");
       doc.text(removeVietnameseTones("- Lý do chi / Nội dung nhận tiền:"), 20, 80);
       doc.setFont("Helvetica", "normal");
-      
+
       const wrappedTitle = doc.splitTextToSize(removeVietnameseTones(data.title), 170);
       doc.text(wrappedTitle, 20, 86);
-      
+
       const nextY = 86 + (wrappedTitle.length * 6);
       doc.setFont("Helvetica", "bold");
       doc.text(removeVietnameseTones(`- Số tiền chi trả: ${formatNumber(data.amount)} VNĐ`), 20, nextY + 4);
       doc.setFont("Helvetica", "normal");
       doc.text(removeVietnameseTones(`- Bằng chữ: ${data.amountInWords}`), 20, nextY + 10);
-      
+
       // Signatures
       doc.setFont("Helvetica", "bold");
       doc.text(removeVietnameseTones("THỦ QUỸ CHI"), 50, nextY + 32, { align: "center" });
       doc.setFont("Helvetica", "normal");
       doc.text(removeVietnameseTones("(Ký và nhận đủ tiền)"), 50, nextY + 37, { align: "center" });
-      
+
       doc.setFont("Helvetica", "bold");
       doc.text(removeVietnameseTones("NGƯỜI NHẬN TIỀN"), 160, nextY + 32, { align: "center" });
       doc.setFont("Helvetica", "normal");
@@ -607,7 +607,7 @@ LƯU Ý QUAN TRỌNG: Chỉ trả về duy nhất một khối JSON thô bắt �
         // Case B: Generate from Template and upload file directly!
         const currentData = templateData[docType];
         const generatedFile = generateMockFileFromTemplate(docType, currentData);
-        
+
         const formData = new FormData();
         formData.append('file', generatedFile);
         formData.append('email', currentData.email);
@@ -1254,7 +1254,7 @@ LƯU Ý QUAN TRỌNG: Chỉ trả về duy nhất một khối JSON thô bắt �
                 className="file-input"
               />
             </div>
-            
+
             <div className="form-control-group">
               <label htmlFor="upload-email">Email liên hệ / người lập <span className="required-star">*</span></label>
               <input
@@ -1338,14 +1338,14 @@ LƯU Ý QUAN TRỌNG: Chỉ trả về duy nhất một khối JSON thô bắt �
                     Mẫu: {docType}
                   </div>
                 </div>
-                
+
                 <div className="ai-autofill-input-row">
                   <input
                     type="text"
                     className="form-input-field"
                     style={{ flex: 1 }}
                     placeholder={
-                      docType === 'CONTRACT' 
+                      docType === 'CONTRACT'
                         ? 'Ví dụ: Hợp đồng hợp tác công nghệ với FPT trị giá 300 triệu do Nguyễn Văn A ký ngày 25/06/2026'
                         : docType === 'PROPOSAL'
                         ? 'Ví dụ: Tờ trình đề xuất mua 5 laptop Dell phục vụ dự án do Trần Văn B lập ngày hôm nay'
@@ -1384,7 +1384,7 @@ LƯU Ý QUAN TRỌNG: Chỉ trả về duy nhất một khối JSON thô bắt �
                     )}
                   </button>
                 </div>
-                
+
                 {aiStatus && (
                   <div className={`ai-status-msg ${aiStatus.type}`}>
                     {aiStatus.message}
@@ -1633,10 +1633,10 @@ LƯU Ý QUAN TRỌNG: Chỉ trả về duy nhất một khối JSON thô bắt �
               activeTab === 'UPLOAD' ? 'Khởi tạo bằng tài liệu tải lên' : 'Tạo và Khởi chạy Quy trình'
             )}
           </button>
-          
-          <button 
-            type="button" 
-            className="action-button secondary" 
+
+          <button
+            type="button"
+            className="action-button secondary"
             onClick={handleClearData}
             disabled={submitting}
           >
@@ -1666,7 +1666,7 @@ LƯU Ý QUAN TRỌNG: Chỉ trả về duy nhất một khối JSON thô bắt �
             </svg>
             <h4 style={{ margin: 0, color: '#46d6a9' }}>Khởi tạo quy trình thành công</h4>
           </div>
-          
+
           <div className="form-stable-grid">
             <div>
               <div className="doc-label">Mã tiến trình (Process Instance ID)</div>

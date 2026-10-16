@@ -1080,6 +1080,67 @@
   }
 }
 
+@media (max-width: 991px) {
+  .pdf-sidebar-left {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    height: 100%;
+    width: 290px;
+    z-index: 100;
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
+    background: rgba(8, 12, 30, 0.98);
+  }
+  .pdf-sidebar-right {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    height: 100%;
+    width: 290px;
+    z-index: 100;
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+    background: rgba(8, 12, 30, 0.98);
+  }
+  
+  .pdf-sidebar-left.collapsed {
+    width: 0;
+    transform: translateX(-100%);
+    border-right: none;
+  }
+  
+  .pdf-sidebar-right.collapsed {
+    width: 0;
+    transform: translateX(100%);
+    border-left: none;
+  }
+
+  .pdf-view-area {
+    width: 100%;
+  }
+}
+
+@media (max-width: 576px) {
+  .pdf-sidebar-left,
+  .pdf-sidebar-right {
+    width: 100% !important;
+  }
+
+  .pdf-btn-text {
+    display: none !important;
+  }
+
+  .pdf-btn {
+    padding: 8px 10px !important;
+  }
+
+  .pdf-viewer-toolbar {
+    padding: 10px 14px !important;
+    gap: 8px !important;
+  }
+}
+
 /* Sleek Premium Scrollbars for PDF Workstation */
 .pdf-view-viewport::-webkit-scrollbar,
 .pdf-sidebar-content::-webkit-scrollbar {

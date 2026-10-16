@@ -4,7 +4,7 @@ import { createPortal } from 'react-dom';
 import '../styles/camunda-viewer.css';
 import PDFViewer from './PDFViewer.jsx';
 
-const API_BASE_URL = import.meta.env.VITE_AUTH_URL || 'https://dms-api-b25o.onrender.com';
+const API_BASE_URL = import.meta.env.VITE_AUTH_URL || 'http://192.168.42.243:8080';
 const statusClasses = {
   DIRECTOR_REJECTED: 'rejected',
   DIRECTOR_APPROVED: 'approved',
@@ -171,11 +171,11 @@ function TaskBoard({ token, user }) {
     const maxVisiblePages = 5;
     let start = Math.max(1, currentPage - 2);
     let end = Math.min(totalPages, start + maxVisiblePages - 1);
-    
+
     if (end - start + 1 < maxVisiblePages) {
       start = Math.max(1, end - maxVisiblePages + 1);
     }
-    
+
     for (let i = start; i <= end; i++) {
       pages.push(i);
     }
@@ -631,8 +631,8 @@ function TaskBoard({ token, user }) {
               return (
                 <div key={taskKey} className={`task-card ${statusClasses[task.status] ?? 'pending'}`}>
                   {/* Collapsed view (Always visible) */}
-                  <div 
-                    className="task-card-summary" 
+                  <div
+                    className="task-card-summary"
                     onClick={() => toggleExpandTask(taskKey)}
                   >
                     <div className="task-card-summary-grid">
@@ -653,9 +653,9 @@ function TaskBoard({ token, user }) {
                         <div className="doc-value">{new Date(task.createdDate).toLocaleDateString('vi-VN')}</div>
                       </div>
                     </div>
-                    
-                    <button 
-                      type="button" 
+
+                    <button
+                      type="button"
                       className="task-collapse-btn"
                       onClick={(e) => {
                         e.stopPropagation();
@@ -664,14 +664,14 @@ function TaskBoard({ token, user }) {
                       aria-label={isExpanded ? "Thu gọn" : "Mở rộng"}
                       title={isExpanded ? "Thu gọn" : "Mở rộng"}
                     >
-                      <svg 
-                        width="18" 
-                        height="18" 
-                        viewBox="0 0 24 24" 
-                        fill="none" 
-                        stroke="currentColor" 
-                        strokeWidth="2.5" 
-                        strokeLinecap="round" 
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
                         strokeLinejoin="round"
                         style={{
                           transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
@@ -734,9 +734,9 @@ function TaskBoard({ token, user }) {
                         <div className="re-upload-section" style={{ marginTop: '14px', padding: '16px', background: 'rgba(239, 68, 68, 0.05)', border: '1px dashed rgba(239, 68, 68, 0.25)', borderRadius: '8px' }}>
                           <h4 style={{ color: '#ff7875', marginBottom: '8px', fontWeight: 'bold' }}>⚠️ Hồ sơ này đã bị trả về. Vui lòng tải lên tài liệu mới để chỉnh sửa:</h4>
                           <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
-                            <input 
-                              type="file" 
-                              accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" 
+                            <input
+                              type="file"
+                              accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
                               id={`re-upload-file-${task.id}`}
                               style={{ display: 'none' }}
                               onChange={(e) => handleReUploadFile(task.id, e.target.files[0])}
@@ -801,7 +801,7 @@ function TaskBoard({ token, user }) {
             >
               &laquo; Trước
             </button>
-            
+
             <div className="pagination-pages">
               {getPageNumbers().map((page) => (
                 <button

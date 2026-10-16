@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { Select, message } from 'antd';
 import '../styles/admin-management.css';
 
-const ADMIN_API_BASE_URL = import.meta.env.VITE_AUTH_URL || 'https://dms-api-b25o.onrender.com';
+const ADMIN_API_BASE_URL = import.meta.env.VITE_AUTH_URL || 'http://192.168.42.243:8080';
 
 // Pre-configured mock backup data for offline resilience
 const MOCK_USERS = [
@@ -33,7 +33,7 @@ function AdminManagement({ user, token, branches: propBranches }) {
   const [docsList, setDocsList] = useState(MOCK_DOCS);
   const [logsList, setLogsList] = useState(MOCK_LOGS);
   const [rolesList, setRolesList] = useState(['ADMIN', 'NORMAL']);
-  const [positionsList, setPositionsList] = useState(['STAFF', 'MANAGER', 'DIRECTOR']);
+  const [positionsList, setPositionsList] = useState(['STAFF', 'MANAGER', 'DIRECTOR', 'SALES_CS', 'LEAD_AUDITOR', 'AUDITOR', 'TECHNICAL_REVIEWER', 'CERT_DIRECTOR']);
   const [branches, setBranches] = useState([]);
 
   useEffect(() => {
@@ -41,7 +41,7 @@ function AdminManagement({ user, token, branches: propBranches }) {
       setBranches(propBranches);
     }
   }, [propBranches]);
-  
+
   const [stats, setStats] = useState({
     totalUsers: 4,
     activeUsers: 3,
@@ -50,7 +50,7 @@ function AdminManagement({ user, token, branches: propBranches }) {
   });
 
   const [settings, setSettings] = useState({
-    camundaUrl: 'https://dms-api-b25o.onrender.com/engine-rest',
+    camundaUrl: 'http://192.168.42.243:8080/engine-rest',
     socketUrl: 'http://localhost:4000',
     requireSignature: true,
     autoNotification: false,
@@ -109,7 +109,7 @@ function AdminManagement({ user, token, branches: propBranches }) {
     const lastName = item.lastName || '';
     const firstName = item.firstName || '';
     const name = lastName || firstName ? `${lastName} ${firstName}`.trim() : (item.name || item.username);
-    
+
     let role = item.roleName || item.role || 'NORMAL';
     let position = item.positionName || item.position || 'STAFF';
     if (item.authorities && item.authorities.length > 0) {
@@ -204,8 +204,8 @@ function AdminManagement({ user, token, branches: propBranches }) {
   const fetchRolesAndPositions = async () => {
     // Fetch Roles
     try {
-      const resRoles = await fetch(`${ADMIN_API_BASE_URL}/api/admin/roles`, { 
-        headers: { 'Authorization': `Bearer ${token}` } 
+      const resRoles = await fetch(`${ADMIN_API_BASE_URL}/api/admin/roles`, {
+        headers: { 'Authorization': `Bearer ${token}` }
       });
       if (resRoles.ok) {
         const data = await resRoles.json();
@@ -220,18 +220,18 @@ function AdminManagement({ user, token, branches: propBranches }) {
 
     // Fetch Positions
     try {
-      const resPos = await fetch(`${ADMIN_API_BASE_URL}/api/admin/positions`, { 
-        headers: { 'Authorization': `Bearer ${token}` } 
+      const resPos = await fetch(`${ADMIN_API_BASE_URL}/api/admin/positions`, {
+        headers: { 'Authorization': `Bearer ${token}` }
       });
       if (resPos.ok) {
         const data = await resPos.json();
-        setPositionsList(Array.isArray(data) ? data : (data.data || ['STAFF', 'MANAGER', 'DIRECTOR']));
+        setPositionsList(Array.isArray(data) ? data : (data.data || ['STAFF', 'MANAGER', 'DIRECTOR', 'SALES_CS', 'LEAD_AUDITOR', 'AUDITOR', 'TECHNICAL_REVIEWER', 'CERT_DIRECTOR']));
       } else {
-        setPositionsList(prev => prev.length ? prev : ['STAFF', 'MANAGER', 'DIRECTOR']);
+        setPositionsList(prev => prev.length ? prev : ['STAFF', 'MANAGER', 'DIRECTOR', 'SALES_CS', 'LEAD_AUDITOR', 'AUDITOR', 'TECHNICAL_REVIEWER', 'CERT_DIRECTOR']);
       }
     } catch (err) {
       console.warn('Positions API failed. Using local defaults:', err);
-      setPositionsList(prev => prev.length ? prev : ['STAFF', 'MANAGER', 'DIRECTOR']);
+      setPositionsList(prev => prev.length ? prev : ['STAFF', 'MANAGER', 'DIRECTOR', 'SALES_CS', 'LEAD_AUDITOR', 'AUDITOR', 'TECHNICAL_REVIEWER', 'CERT_DIRECTOR']);
     }
   };
 
@@ -386,10 +386,10 @@ function AdminManagement({ user, token, branches: propBranches }) {
     }
 
     try {
-      const url = editingUser 
+      const url = editingUser
         ? `${ADMIN_API_BASE_URL}/api/admin/users/${editingUser.id}`
         : `${ADMIN_API_BASE_URL}/api/admin/users`;
-      
+
       const method = editingUser ? 'PUT' : 'POST';
 
       const response = await fetch(url, {
@@ -413,7 +413,7 @@ function AdminManagement({ user, token, branches: propBranches }) {
     } catch (err) {
       console.warn('Users mutate API error. Activating resilient local fallback.', err);
       setIsOffline(true);
-      
+
       if (editingUser) {
         setUsersList(prev => prev.map(u => u.id === editingUser.id ? { ...u, ...userForm, name: `${userForm.lastName} ${userForm.firstName}`.trim() } : u));
         logLocalEvent(`Cập nhật thông tin người dùng: ${userForm.username}`);
@@ -445,7 +445,7 @@ function AdminManagement({ user, token, branches: propBranches }) {
         method: 'PUT',
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      
+
       if (!response.ok) throw new Error('API Toggle error');
       triggerToast(`Đã đổi trạng thái tài khoản: ${targetUser.username}`);
       fetchUsers(userSearch);
@@ -543,7 +543,7 @@ function AdminManagement({ user, token, branches: propBranches }) {
     const secLevel = doc.security || doc.securityLevel || 'Nội bộ';
     const rolesStr = doc.allowedRole || doc.allowedRoles || '';
     const positionsStr = doc.allowedPositions || '';
-    
+
     setAccessForm({
       securityLevel: secLevel,
       allowedRoles: rolesStr ? rolesStr.split(',')[0].trim() : '',
@@ -573,23 +573,23 @@ function AdminManagement({ user, token, branches: propBranches }) {
       });
 
       if (!response.ok) throw new Error('Access control API failed');
-      
+
       triggerToast(`Đã cập nhật phân quyền tài liệu: ${selectedDoc.title || selectedDoc.docId}`);
       setAccessModalOpen(false);
       fetchDocs(docFilter);
     } catch (err) {
       console.warn('Access Control API failed. Activating resilient local fallback.', err);
       setIsOffline(true);
-      
-      setDocsList(prev => prev.map(d => d.id === selectedDoc.id ? { 
-        ...d, 
+
+      setDocsList(prev => prev.map(d => d.id === selectedDoc.id ? {
+        ...d,
         security: accessForm.securityLevel,
         securityLevel: accessForm.securityLevel,
         allowedRole: accessForm.allowedRoles || '',
         allowedRoles: accessForm.allowedRoles || '',
         allowedPositions: accessForm.allowedPositions.join(',')
       } : d));
-      
+
       logLocalEvent(`Cập nhật phân quyền văn bản "${selectedDoc.title || selectedDoc.docId}"`);
       triggerToast(`[Offline] Đã cập nhật phân quyền cục bộ`);
       setAccessModalOpen(false);
@@ -654,7 +654,7 @@ function AdminManagement({ user, token, branches: propBranches }) {
   // Offline filtered UI helper (when search query changes and API fails)
   const viewUsers = useMemo(() => {
     if (!isOffline) return usersList;
-    return usersList.filter(u => 
+    return usersList.filter(u =>
       u.username.toLowerCase().includes(userSearch.toLowerCase()) ||
       u.name.toLowerCase().includes(userSearch.toLowerCase()) ||
       u.email.toLowerCase().includes(userSearch.toLowerCase()) ||
@@ -678,7 +678,7 @@ function AdminManagement({ user, token, branches: propBranches }) {
             Kết nối API tiến trình Camunda Engine, quản lý người dùng tương tác và giám sát luồng Audit Trail.
           </p>
         </div>
-        
+
         {/* Offline status badge */}
         {isOffline && (
           <div className="admin-badge pending" style={{ padding: '8px 16px', fontSize: '0.85rem', fontWeight: '800', border: '1px solid #f59e0b', display: 'flex', gap: '8px', borderRadius: '12px' }}>
@@ -740,7 +740,7 @@ function AdminManagement({ user, token, branches: propBranches }) {
 
       {/* Main Workspace Card */}
       <div className="admin-card-workspace">
-        
+
         {/* Tab 1: User Management List */}
         {activeTab === 'users' && (
           <>
@@ -750,9 +750,9 @@ function AdminManagement({ user, token, branches: propBranches }) {
                 <p>Cập nhật vai trò phân quyền (Roles) và vị trí hành động duyệt hồ sơ (Positions) cho nhân viên.</p>
               </div>
               <div className="admin-action-row">
-                <input 
-                  type="text" 
-                  className="admin-search-input" 
+                <input
+                  type="text"
+                  className="admin-search-input"
                   placeholder="Tìm kiếm tài khoản..."
                   value={userSearch}
                   onChange={(e) => setUserSearch(e.target.value)}
@@ -806,22 +806,22 @@ function AdminManagement({ user, token, branches: propBranches }) {
                         </td>
                         <td style={{ textAlign: 'right' }}>
                           <div style={{ display: 'inline-flex', gap: '4px' }}>
-                            <button 
-                              className="admin-action-btn edit" 
+                            <button
+                              className="admin-action-btn edit"
                               title="Chỉnh sửa thông tin"
                               onClick={() => openEditUserModal(item)}
                             >
                               ✏️
                             </button>
-                            <button 
-                              className="admin-action-btn" 
+                            <button
+                              className="admin-action-btn"
                               title={item.enabled ? 'Khóa tài khoản này' : 'Kích hoạt tài khoản này'}
                               onClick={() => handleToggleUserStatus(item)}
                             >
                               {item.enabled ? '🔒' : '🔑'}
                             </button>
-                            <button 
-                              className="admin-action-btn delete" 
+                            <button
+                              className="admin-action-btn delete"
                               title="Xóa tài khoản vĩnh viễn"
                               onClick={() => handleDeleteUser(item)}
                             >
@@ -854,7 +854,7 @@ function AdminManagement({ user, token, branches: propBranches }) {
                 <p>Danh sách văn bản đang lưu hành, click để chuyển bậc cấp độ bảo mật hành chính.</p>
               </div>
               <div className="admin-action-row">
-                 <Select 
+                 <Select
                    style={{ width: '160px' }}
                    value={docFilter}
                    onChange={(val) => setDocFilter(val)}
@@ -886,9 +886,9 @@ function AdminManagement({ user, token, branches: propBranches }) {
                       <td>{doc.size}</td>
                       <td>{doc.creator} <span style={{ color: 'var(--muted)', fontSize: '0.78rem' }}>({doc.date})</span></td>
                       <td>
-                        <button 
+                        <button
                           onClick={() => openAccessModal(doc)}
-                          className="admin-badge admin" 
+                          className="admin-badge admin"
                           style={{ cursor: 'pointer', border: '1px dashed var(--accent)', background: 'none' }}
                           title="Bấm để cấu hình phân quyền"
                         >
@@ -902,16 +902,16 @@ function AdminManagement({ user, token, branches: propBranches }) {
                       </td>
                       <td style={{ textAlign: 'right' }}>
                         <div style={{ display: 'inline-flex', gap: '8px', justifyContent: 'flex-end' }}>
-                          <button 
-                            className="admin-action-btn edit" 
+                          <button
+                            className="admin-action-btn edit"
                             style={{ padding: '6px 12px', fontSize: '0.82rem', whiteSpace: 'nowrap' }}
                             title="Phân quyền chi tiết"
                             onClick={() => openAccessModal(doc)}
                           >
                             🔑 Quyền
                           </button>
-                          <button 
-                            className="admin-action-btn delete" 
+                          <button
+                            className="admin-action-btn delete"
                             style={{ padding: '6px 12px', fontSize: '0.82rem', whiteSpace: 'nowrap' }}
                             onClick={() => handleDeleteDoc(doc.id, doc.title || doc.docId)}
                           >
@@ -946,16 +946,16 @@ function AdminManagement({ user, token, branches: propBranches }) {
 
             <form onSubmit={saveSettings} className="admin-modal-form">
               <div className="admin-settings-grid">
-                
+
                 {/* Connections panel */}
                 <div className="admin-settings-section">
                   <span className="admin-settings-section-title">🔗 Đường dẫn kết nối API & Cổng Socket</span>
-                  
+
                   <div className="admin-field-group">
                     <label>Camunda Rest URL Engine</label>
-                    <input 
-                      type="text" 
-                      className="admin-input" 
+                    <input
+                      type="text"
+                      className="admin-input"
                       value={settings.camundaUrl}
                       onChange={(e) => handleSettingInput('camundaUrl', e.target.value)}
                     />
@@ -963,9 +963,9 @@ function AdminManagement({ user, token, branches: propBranches }) {
 
                   <div className="admin-field-group" style={{ marginTop: '10px' }}>
                     <label>Socket Host Hub</label>
-                    <input 
-                      type="text" 
-                      className="admin-input" 
+                    <input
+                      type="text"
+                      className="admin-input"
                       value={settings.socketUrl}
                       onChange={(e) => handleSettingInput('socketUrl', e.target.value)}
                     />
@@ -973,9 +973,9 @@ function AdminManagement({ user, token, branches: propBranches }) {
 
                   <div className="admin-field-group" style={{ marginTop: '10px' }}>
                     <label>Thời gian chờ phản hồi tối đa (ms)</label>
-                    <input 
-                      type="number" 
-                      className="admin-input" 
+                    <input
+                      type="number"
+                      className="admin-input"
                       value={settings.apiTimeout}
                       onChange={(e) => handleSettingInput('apiTimeout', parseInt(e.target.value) || 5000)}
                     />
@@ -985,15 +985,15 @@ function AdminManagement({ user, token, branches: propBranches }) {
                 {/* Policies Switches panel */}
                 <div className="admin-settings-section">
                   <span className="admin-settings-section-title">🛡️ Chính sách quy trình ký duyệt số</span>
-                  
+
                   <div className="admin-switch-row">
                     <div className="admin-switch-label">
                       <span className="admin-switch-title">Bắt buộc đính chữ ký và dấu mộc</span>
                       <span className="admin-switch-desc">Yêu cầu hoàn tất ký nháp số trước khi chuyển luồng duyệt.</span>
                     </div>
                     <label className="admin-switch">
-                      <input 
-                        type="checkbox" 
+                      <input
+                        type="checkbox"
                         checked={settings.requireSignature}
                         onChange={() => handleSettingToggle('requireSignature')}
                       />
@@ -1007,8 +1007,8 @@ function AdminManagement({ user, token, branches: propBranches }) {
                       <span className="admin-switch-desc">Kích hoạt thông báo tự động ngay khi có task Camunda mới.</span>
                     </div>
                     <label className="admin-switch">
-                      <input 
-                        type="checkbox" 
+                      <input
+                        type="checkbox"
                         checked={settings.autoNotification}
                         onChange={() => handleSettingToggle('autoNotification')}
                       />
@@ -1022,8 +1022,8 @@ function AdminManagement({ user, token, branches: propBranches }) {
                       <span className="admin-switch-desc">Tự động ghi nhận thông tin truy cập của admin vào Audit trail.</span>
                     </div>
                     <label className="admin-switch">
-                      <input 
-                        type="checkbox" 
+                      <input
+                        type="checkbox"
                         checked={settings.auditLogging}
                         onChange={() => handleSettingToggle('auditLogging')}
                       />
@@ -1051,8 +1051,8 @@ function AdminManagement({ user, token, branches: propBranches }) {
                 <h3>Dòng lịch sử giám sát hệ thống (Live synced via SSE)</h3>
                 <p>Nhật ký tự động ghi nhận luồng hoạt động đăng nhập, ký duyệt và điều chỉnh cấu hình.</p>
               </div>
-              <button 
-                className="pdf-btn" 
+              <button
+                className="pdf-btn"
                 onClick={() => {
                   setLogsList([]);
                   triggerToast('Đã dọn dẹp danh sách nhật ký vết!');
@@ -1117,8 +1117,8 @@ function AdminManagement({ user, token, branches: propBranches }) {
             <form onSubmit={handleUserFormSubmit} className="admin-modal-form">
               <div className="admin-field-group">
                 <label>Tên đăng nhập (Username)</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   className="admin-input"
                   placeholder="E.g. hoangnam"
                   value={userForm.username}
@@ -1131,8 +1131,8 @@ function AdminManagement({ user, token, branches: propBranches }) {
               {!editingUser && (
                 <div className="admin-field-group">
                   <label>Mật khẩu đăng nhập</label>
-                  <input 
-                    type="password" 
+                  <input
+                    type="password"
                     className="admin-input"
                     placeholder="Mật khẩu bảo mật"
                     value={userForm.password}
@@ -1145,8 +1145,8 @@ function AdminManagement({ user, token, branches: propBranches }) {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 <div className="admin-field-group">
                   <label>Họ đệm (Last name)</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     className="admin-input"
                     placeholder="Hoàng"
                     value={userForm.lastName}
@@ -1156,8 +1156,8 @@ function AdminManagement({ user, token, branches: propBranches }) {
                 </div>
                 <div className="admin-field-group">
                   <label>Tên chính (First name)</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     className="admin-input"
                     placeholder="Nam"
                     value={userForm.firstName}
@@ -1169,8 +1169,8 @@ function AdminManagement({ user, token, branches: propBranches }) {
 
               <div className="admin-field-group">
                 <label>Hộp thư liên hệ (Email)</label>
-                <input 
-                  type="email" 
+                <input
+                  type="email"
                   className="admin-input"
                   placeholder="nam.hoang@gmail.com"
                   value={userForm.email}
@@ -1181,8 +1181,8 @@ function AdminManagement({ user, token, branches: propBranches }) {
 
               <div className="admin-field-group">
                 <label>Số điện thoại (Phone)</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   className="admin-input"
                   placeholder="0912345678"
                   value={userForm.phone}
@@ -1193,7 +1193,7 @@ function AdminManagement({ user, token, branches: propBranches }) {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 <div className="admin-field-group">
                   <label>Nhóm quyền (Role)</label>
-                  <Select 
+                  <Select
                     style={{ width: '100%' }}
                     size="large"
                     value={userForm.role}
@@ -1208,7 +1208,7 @@ function AdminManagement({ user, token, branches: propBranches }) {
 
                 <div className="admin-field-group">
                   <label>Chức vụ duyệt (Position)</label>
-                  <Select 
+                  <Select
                     style={{ width: '100%' }}
                     size="large"
                     value={userForm.position}
@@ -1224,7 +1224,7 @@ function AdminManagement({ user, token, branches: propBranches }) {
 
               <div className="admin-field-group" style={{ marginTop: '10px' }}>
                 <label>Chi nhánh trực thuộc (Branch)</label>
-                <Select 
+                <Select
                   style={{ width: '100%' }}
                   size="large"
                   placeholder="Chọn chi nhánh..."
@@ -1239,8 +1239,8 @@ function AdminManagement({ user, token, branches: propBranches }) {
               <div className="admin-switch-row" style={{ border: 'none', padding: '5px 0' }}>
                 <span className="admin-switch-title">Kích hoạt tài khoản này</span>
                 <label className="admin-switch">
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     checked={userForm.enabled}
                     onChange={(e) => setUserForm({...userForm, enabled: e.target.checked})}
                   />
@@ -1260,7 +1260,7 @@ function AdminManagement({ user, token, branches: propBranches }) {
           </div>
         </div>
       )}
-      
+
       {/* Popup Form Modal for Access Control configuration */}
       {accessModalOpen && selectedDoc && (
         <div className="admin-modal-overlay">
@@ -1280,7 +1280,7 @@ function AdminManagement({ user, token, branches: propBranches }) {
 
               <div className="admin-field-group">
                 <label>Mức độ bảo mật hành chính (Security Level)</label>
-                <Select 
+                <Select
                   style={{ width: '100%' }}
                   size="large"
                   value={accessForm.securityLevel}
@@ -1297,7 +1297,7 @@ function AdminManagement({ user, token, branches: propBranches }) {
 
               <div className="admin-field-group" style={{ marginTop: '14px' }}>
                 <label>Giới hạn theo vai trò (Allowed Role - Để trống nếu không giới hạn)</label>
-                <Select 
+                <Select
                   style={{ width: '100%' }}
                   size="large"
                   placeholder="Chọn vai trò được phép truy cập..."
@@ -1314,7 +1314,7 @@ function AdminManagement({ user, token, branches: propBranches }) {
 
               <div className="admin-field-group" style={{ marginTop: '14px' }}>
                 <label>Giới hạn theo chức vụ (Allowed Positions - Để trống nếu không giới hạn)</label>
-                <Select 
+                <Select
                   mode="multiple"
                   style={{ width: '100%' }}
                   size="large"

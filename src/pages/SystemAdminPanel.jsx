@@ -1,12 +1,12 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Table, Button, Input, Select, Switch, Modal, Form, 
-  Card, Checkbox, message, Space, Tag, Divider 
+import {
+  Table, Button, Input, Select, Switch, Modal, Form,
+  Card, Checkbox, message, Space, Tag, Divider
 } from 'antd';
-import { 
-  SettingOutlined, BranchesOutlined, TeamOutlined, 
-  AppstoreOutlined, BgColorsOutlined, LogoutOutlined, 
+import {
+  SettingOutlined, BranchesOutlined, TeamOutlined,
+  AppstoreOutlined, BgColorsOutlined, LogoutOutlined,
   PlusOutlined, EditOutlined, DeleteOutlined, FolderOpenOutlined,
   BarChartOutlined, HistoryOutlined, FileTextOutlined,
   DeploymentUnitOutlined
@@ -43,7 +43,7 @@ ChartJS.register(
   Filler
 );
 
-const ADMIN_API_BASE_URL = import.meta.env.VITE_AUTH_URL || 'https://dms-api-b25o.onrender.com';
+const ADMIN_API_BASE_URL = import.meta.env.VITE_AUTH_URL || 'http://192.168.42.243:8080';
 
 const DEFAULT_MENUS = [
   { key: 'home', label: 'Tổng quan', path: '/', defaultRoles: ['ADMIN', 'NORMAL'] },
@@ -51,6 +51,7 @@ const DEFAULT_MENUS = [
   { key: 'tasks', label: 'Hồ sơ', path: '/tasks', defaultRoles: ['ADMIN', 'NORMAL'] },
   { key: 'start', label: 'Tạo Task', path: '/start', defaultRoles: ['ADMIN', 'NORMAL'] },
   { key: 'pdf', label: 'PDF Viewer', path: '/pdf', defaultRoles: ['ADMIN', 'NORMAL'] },
+  { key: 'certification', label: 'Đánh giá Chứng nhận', path: '/certification', defaultRoles: ['ADMIN', 'NORMAL'] },
   { key: 'reports', label: 'Báo cáo', path: '/reports', defaultRoles: ['ADMIN'] },
   { key: 'admin', label: 'Quản trị hồ sơ', path: '/admin', defaultRoles: ['ADMIN'] },
   { key: 'system-admin', label: 'Quản trị hệ thống', path: '/system-admin', defaultRoles: ['ADMIN'] }
@@ -82,7 +83,7 @@ function SystemAdminPanel({ user, token, currentTheme, setTheme }) {
   // --- API State ---
   const [loading, setLoading] = useState(false);
   const [settings, setSettings] = useState({
-    camundaUrl: 'https://dms-api-b25o.onrender.com/engine-rest',
+    camundaUrl: 'http://192.168.42.243:8080/engine-rest',
     socketHost: 'http://localhost:4000',
     apiTimeout: 5000,
     requireDigitalSignature: false,
@@ -323,7 +324,7 @@ function SystemAdminPanel({ user, token, currentTheme, setTheme }) {
         if (settingsData.defaultTheme && currentTheme !== settingsData.defaultTheme) {
           setTheme(settingsData.defaultTheme);
         }
-        
+
         // Parse menu permissions
         try {
           const parsed = JSON.parse(settingsData.menuPermissions || '{}');
@@ -412,11 +413,11 @@ function SystemAdminPanel({ user, token, currentTheme, setTheme }) {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (!response.ok) throw new Error("Stream connection failed");
-        
+
         setSseConnected(true);
         reader = response.body.getReader();
         const decoder = new TextDecoder();
-        
+
         let buffer = '';
         while (active) {
           const { value, done } = await reader.read();
@@ -424,7 +425,7 @@ function SystemAdminPanel({ user, token, currentTheme, setTheme }) {
           buffer += decoder.decode(value, { stream: true });
           const lines = buffer.split('\n');
           buffer = lines.pop() || '';
-          
+
           for (const line of lines) {
             if (line.startsWith('data:')) {
               try {
@@ -530,7 +531,7 @@ function SystemAdminPanel({ user, token, currentTheme, setTheme }) {
 
   const handleBranchSubmit = async (values) => {
     try {
-      const url = editingBranch 
+      const url = editingBranch
         ? `${ADMIN_API_BASE_URL}/api/admin/branches/${editingBranch.id}`
         : `${ADMIN_API_BASE_URL}/api/admin/branches`;
       const method = editingBranch ? 'PUT' : 'POST';
@@ -593,7 +594,7 @@ function SystemAdminPanel({ user, token, currentTheme, setTheme }) {
     };
 
     try {
-      const url = editingGroup 
+      const url = editingGroup
         ? `${ADMIN_API_BASE_URL}/api/admin/groups/${editingGroup.id}`
         : `${ADMIN_API_BASE_URL}/api/admin/groups`;
       const method = editingGroup ? 'PUT' : 'POST';
@@ -702,9 +703,9 @@ function SystemAdminPanel({ user, token, currentTheme, setTheme }) {
           </div>
         </div>
         <Divider style={{ margin: '12px 0', borderColor: 'rgba(255,255,255,0.06)' }} />
-        
+
         <nav className="sidebar-nav">
-          <button 
+          <button
             className={`nav-item ${activeMenu === 'docs-admin' ? 'active' : ''}`}
             onClick={() => setActiveMenu('docs-admin')}
           >
@@ -712,7 +713,7 @@ function SystemAdminPanel({ user, token, currentTheme, setTheme }) {
             <span>Quản trị hồ sơ</span>
           </button>
 
-          <button 
+          <button
             className={`nav-item ${activeMenu === 'analytics' ? 'active' : ''}`}
             onClick={() => setActiveMenu('analytics')}
           >
@@ -720,7 +721,7 @@ function SystemAdminPanel({ user, token, currentTheme, setTheme }) {
             <span>Biểu đồ thống kê</span>
           </button>
 
-          <button 
+          <button
             className={`nav-item ${activeMenu === 'reports' ? 'active' : ''}`}
             onClick={() => setActiveMenu('reports')}
           >
@@ -728,7 +729,7 @@ function SystemAdminPanel({ user, token, currentTheme, setTheme }) {
             <span>Báo cáo</span>
           </button>
 
-          <button 
+          <button
             className={`nav-item ${activeMenu === 'bpmn-designer' ? 'active' : ''}`}
             onClick={() => setActiveMenu('bpmn-designer')}
           >
@@ -736,7 +737,7 @@ function SystemAdminPanel({ user, token, currentTheme, setTheme }) {
             <span>Thiết kế quy trình</span>
           </button>
 
-          <button 
+          <button
             className={`nav-item ${activeMenu === 'audit-logs' ? 'active' : ''}`}
             onClick={() => setActiveMenu('audit-logs')}
           >
@@ -744,15 +745,15 @@ function SystemAdminPanel({ user, token, currentTheme, setTheme }) {
             <span>Nhật ký hệ thống</span>
           </button>
 
-          <button 
+          <button
             className={`nav-item ${activeMenu === 'menu-permissions' ? 'active' : ''}`}
             onClick={() => setActiveMenu('menu-permissions')}
           >
             <AppstoreOutlined />
             <span>Phân quyền menu</span>
           </button>
-          
-          <button 
+
+          <button
             className={`nav-item ${activeMenu === 'theme' ? 'active' : ''}`}
             onClick={() => setActiveMenu('theme')}
           >
@@ -760,7 +761,7 @@ function SystemAdminPanel({ user, token, currentTheme, setTheme }) {
             <span>Cấu hình theme</span>
           </button>
 
-          <button 
+          <button
             className={`nav-item ${activeMenu === 'branches' ? 'active' : ''}`}
             onClick={() => setActiveMenu('branches')}
           >
@@ -768,7 +769,7 @@ function SystemAdminPanel({ user, token, currentTheme, setTheme }) {
             <span>Quản lý chi nhánh</span>
           </button>
 
-          <button 
+          <button
             className={`nav-item ${activeMenu === 'groups' ? 'active' : ''}`}
             onClick={() => setActiveMenu('groups')}
           >
@@ -776,7 +777,7 @@ function SystemAdminPanel({ user, token, currentTheme, setTheme }) {
             <span>Phân quyền theo nhóm</span>
           </button>
 
-          <button 
+          <button
             className={`nav-item ${activeMenu === 'settings' ? 'active' : ''}`}
             onClick={() => setActiveMenu('settings')}
           >
@@ -845,8 +846,8 @@ function SystemAdminPanel({ user, token, currentTheme, setTheme }) {
                   <div className="stat-card-content">
                     <span className="stat-title">Tỷ lệ hoàn thành duyệt</span>
                     <h3 className="stat-value">
-                      {stats.totalDocuments 
-                        ? Math.round(((stats.totalDocuments - stats.pendingDocuments) / stats.totalDocuments) * 100) 
+                      {stats.totalDocuments
+                        ? Math.round(((stats.totalDocuments - stats.pendingDocuments) / stats.totalDocuments) * 100)
                         : 100}%
                     </h3>
                     <span className="stat-sub">Đã phê duyệt hoàn tất</span>
@@ -929,13 +930,13 @@ function SystemAdminPanel({ user, token, currentTheme, setTheme }) {
                   </span>
                 </div>
                 <div style={{ display: 'flex', gap: '10px' }}>
-                  <Input 
-                    placeholder="Tìm nội dung log..." 
+                  <Input
+                    placeholder="Tìm nội dung log..."
                     value={logFilterQuery}
                     onChange={e => setLogFilterQuery(e.target.value)}
                     style={{ width: '200px' }}
                   />
-                  <Select 
+                  <Select
                     value={logFilterLevel}
                     onChange={val => setLogFilterLevel(val)}
                     style={{ width: '120px' }}
@@ -949,7 +950,7 @@ function SystemAdminPanel({ user, token, currentTheme, setTheme }) {
                 </div>
               </div>
             }>
-              <Table 
+              <Table
                 dataSource={auditLogs.filter(log => {
                   const matchesQuery = logFilterQuery ? (log.action || '').toLowerCase().includes(logFilterQuery.toLowerCase()) : true;
                   const matchesLevel = logFilterLevel === 'ALL' ? true : log.level === logFilterLevel;
@@ -959,10 +960,10 @@ function SystemAdminPanel({ user, token, currentTheme, setTheme }) {
                 size="middle"
                 pagination={{ pageSize: 12 }}
                 columns={[
-                  { 
-                    title: 'Thời gian', 
-                    dataIndex: 'timestamp', 
-                    key: 'timestamp', 
+                  {
+                    title: 'Thời gian',
+                    dataIndex: 'timestamp',
+                    key: 'timestamp',
                     width: '180px',
                     render: (t) => {
                       try {
@@ -973,10 +974,10 @@ function SystemAdminPanel({ user, token, currentTheme, setTheme }) {
                       }
                     }
                   },
-                  { 
-                    title: 'Cấp độ', 
-                    dataIndex: 'level', 
-                    key: 'level', 
+                  {
+                    title: 'Cấp độ',
+                    dataIndex: 'level',
+                    key: 'level',
                     width: '100px',
                     render: (l) => (
                       <Tag color={l === 'WARN' ? 'warning' : 'blue'}>
@@ -984,9 +985,9 @@ function SystemAdminPanel({ user, token, currentTheme, setTheme }) {
                       </Tag>
                     )
                   },
-                  { 
-                    title: 'Chi tiết hoạt động', 
-                    dataIndex: 'action', 
+                  {
+                    title: 'Chi tiết hoạt động',
+                    dataIndex: 'action',
                     key: 'action',
                     render: (text) => (
                       <span style={{ fontWeight: '500', wordBreak: 'break-all' }}>{text}</span>
@@ -1018,8 +1019,8 @@ function SystemAdminPanel({ user, token, currentTheme, setTheme }) {
                           <td><code>{menu.path}</code></td>
                           {AVAILABLE_ROLES.map(role => (
                             <td key={role}>
-                              <Checkbox 
-                                checked={rolesList.includes(role)} 
+                              <Checkbox
+                                checked={rolesList.includes(role)}
                                 onChange={(e) => handleMenuPermChange(menu.key, role, e.target.checked)}
                               />
                             </td>
@@ -1041,8 +1042,8 @@ function SystemAdminPanel({ user, token, currentTheme, setTheme }) {
             <Card className="workspace-card" title="Chọn Theme giao diện hệ thống mặc định (Real-time update)">
               <div className="theme-grid">
                 {['spring', 'summer', 'autumn', 'winter'].map(t => (
-                  <div 
-                    key={t} 
+                  <div
+                    key={t}
                     className={`theme-box-card ${t} ${currentTheme === t ? 'active' : ''}`}
                     onClick={() => changeTheme(t)}
                   >
@@ -1060,8 +1061,8 @@ function SystemAdminPanel({ user, token, currentTheme, setTheme }) {
 
           {/* Branch Screen */}
           {activeMenu === 'branches' && (
-            <Card 
-              className="workspace-card" 
+            <Card
+              className="workspace-card"
               title="Mạng lưới chi nhánh công ty"
               extra={<Button type="primary" icon={<PlusOutlined />} onClick={openBranchCreateModal}>Thêm chi nhánh</Button>}
             >
@@ -1071,8 +1072,8 @@ function SystemAdminPanel({ user, token, currentTheme, setTheme }) {
 
           {/* Group Screen */}
           {activeMenu === 'groups' && (
-            <Card 
-              className="workspace-card" 
+            <Card
+              className="workspace-card"
               title="Phân nhóm quản lý & vai trò người dùng"
               extra={<Button type="primary" icon={<PlusOutlined />} onClick={openGroupCreateModal}>Thêm nhóm quyền</Button>}
             >
@@ -1083,7 +1084,7 @@ function SystemAdminPanel({ user, token, currentTheme, setTheme }) {
           {/* Settings Screen */}
           {activeMenu === 'settings' && (
             <Card className="workspace-card" title="Cấu hình tham số dịch vụ tích hợp">
-              <Form 
+              <Form
                 layout="vertical"
                 initialValues={settings}
                 onFinish={(values) => saveSystemSettings({ ...settings, ...values })}

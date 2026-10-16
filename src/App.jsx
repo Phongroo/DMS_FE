@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
-import { ConfigProvider, theme as antdTheme, Layout as AntdLayout } from 'antd';
+import { ConfigProvider, theme as antdTheme, Layout as AntdLayout, Drawer } from 'antd';
 import Sidebar from './components/Sidebar.jsx';
 import Header from './components/Header.jsx';
 import ChatBox from './components/ChatBox.jsx';
@@ -14,6 +14,7 @@ import Reports from './pages/Reports.jsx';
 import Login from './pages/Login.jsx';
 import AdminManagement from './pages/AdminManagement.jsx';
 import SystemAdminPanel from './pages/SystemAdminPanel.jsx';
+import CertificationAudit from './pages/CertificationAudit.jsx';
 import { useSocket } from './hooks/useSocket.js';
 import menuData from './data/menu.js';
 
@@ -73,7 +74,7 @@ const themeConfigMap = {
 };
 
 const seasons = ['spring', 'summer', 'autumn', 'winter'];
-const AUTH_BASE_URL = import.meta.env.VITE_AUTH_URL || 'https://dms-api-b25o.onrender.com';
+const AUTH_BASE_URL = import.meta.env.VITE_AUTH_URL || 'http://192.168.42.243:8080';
 
 function App() {
   const [theme, setTheme] = useState('spring');
@@ -85,6 +86,7 @@ function App() {
   const [user, setUser] = useState(null);
   const [loadingUser, setLoadingUser] = useState(Boolean(token));
   const [hasRedirected, setHasRedirected] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -122,7 +124,9 @@ function App() {
   useEffect(() => {
     if (user && user.authorities?.[0]?.authority === 'ADMIN' && !hasRedirected) {
       setHasRedirected(true);
-      navigate('/system-admin');
+      if (window.location.pathname === '/' || window.location.pathname === '') {
+        navigate('/system-admin');
+      }
     }
   }, [user, hasRedirected, navigate]);
 
@@ -166,7 +170,7 @@ function App() {
 
   const handleTaskReceived = useCallback((approval) => {
     setLiveApprovals((current) => [approval, ...current].slice(0, 5));
-    
+
     // Push to persistent notifications history
     setNotifications((prev) => {
       const newNotification = {
@@ -215,7 +219,7 @@ function App() {
     const isAdmin = user?.authorities?.[0]?.authority === 'ADMIN';
     return menuData.filter((item) => {
       if (isAdmin) {
-        return item.path === '/system-admin';
+        return item.path === '/system-admin' || item.path === '/certification';
       }
       const overrideKey = item.path === '/' ? 'home' : item.path.replace('/', '');
       const allowedRoles = menuPermissions[overrideKey] || item.roles;
@@ -234,19 +238,34 @@ function App() {
   return (
     <ConfigProvider theme={themeConfigMap[theme]}>
       <SeasonalCanvas theme={theme} />
+
+      {/* Drawer for Mobile Navigation */}
+      <Drawer
+        placement="left"
+        closable={true}
+        onClose={() => setMobileMenuOpen(false)}
+        open={mobileMenuOpen}
+        bodyStyle={{ padding: 0, background: 'var(--sidebar-bg)' }}
+        width={280}
+      >
+        <Sidebar menu={filteredMenu} user={user} isMobile={true} onClose={() => setMobileMenuOpen(false)} />
+      </Drawer>
+
       <AntdLayout hasSider style={{ minHeight: '100vh', background: 'var(--bg)' }} className={`theme-${theme}`}>
+        {/* Static Sidebar for Desktop */}
         <Sidebar menu={filteredMenu} user={user} />
         <AntdLayout style={{ background: 'transparent' }}>
-          <Header 
-            user={user} 
-            theme={theme} 
-            setTheme={setTheme} 
-            seasons={seasons} 
-            onLogout={handleLogout} 
-            notifications={notifications} 
-            setNotifications={setNotifications} 
+          <Header
+            user={user}
+            theme={theme}
+            setTheme={setTheme}
+            seasons={seasons}
+            onLogout={handleLogout}
+            notifications={notifications}
+            setNotifications={setNotifications}
+            onToggleMenu={() => setMobileMenuOpen(true)}
           />
-          <AntdLayout.Content style={{ padding: '32px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <AntdLayout.Content className="main-content-area" style={{ overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '24px' }}>
             <div className="top-banner">
               <div>
                 <h1>Dashboard DMS Approval</h1>
@@ -289,6 +308,7 @@ function App() {
               <Route path="/start" element={user?.authorities?.[0]?.authority === 'ADMIN' ? <Navigate to="/system-admin" replace /> : <StartTask token={token} user={user} />} />
               <Route path="/pdf" element={user?.authorities?.[0]?.authority === 'ADMIN' ? <Navigate to="/system-admin" replace /> : <PDFView user={user} token={token} />} />
               <Route path="/reports" element={user?.authorities?.[0]?.authority === 'ADMIN' ? <Navigate to="/system-admin" replace /> : <Reports user={user} token={token} />} />
+              <Route path="/certification" element={<CertificationAudit user={user} token={token} />} />
               <Route path="/admin" element={<Navigate to="/system-admin" replace />} />
               <Route path="/system-admin" element={user?.authorities?.[0]?.authority === 'ADMIN' ? <SystemAdminPanel user={user} token={token} currentTheme={theme} setTheme={setTheme} /> : <Navigate to="/" replace />} />
               <Route path="*" element={<Navigate to="/" replace />} />

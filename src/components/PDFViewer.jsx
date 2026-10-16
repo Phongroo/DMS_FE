@@ -154,7 +154,7 @@ const PRESET_DOCUMENTS = [
   }
 ];
 
-const API_BASE_URL = import.meta.env.VITE_AUTH_URL || 'https://dms-api-b25o.onrender.com';
+const API_BASE_URL = import.meta.env.VITE_AUTH_URL || 'https://http://192.168.42.243:8080';
 
 function PDFViewer({ defaultPdfUrl, defaultDocTitle, defaultDocId, token }) {
   const initialDoc = useMemo(() => {
@@ -200,7 +200,7 @@ function PDFViewer({ defaultPdfUrl, defaultDocTitle, defaultDocId, token }) {
       });
     }
   }, [defaultPdfUrl, initialDoc]);
-  
+
   // PDF.js State
   const [pdfjsLoaded, setPdfjsLoaded] = useState(false);
   const [pdfDocument, setPdfDocument] = useState(null);
@@ -217,7 +217,7 @@ function PDFViewer({ defaultPdfUrl, defaultDocTitle, defaultDocId, token }) {
   const [leftTab, setLeftTab] = useState('library'); // 'library' | 'pages' | 'tools'
   const [rightTab, setRightTab] = useState('info'); // 'info' | 'activity'
   const [bannerVisible, setBannerVisible] = useState(true);
-  
+
   // Custom interactive annotation state
   const [annotations, setAnnotations] = useState([]);
   const [selectedAnnotation, setSelectedAnnotation] = useState(null);
@@ -247,18 +247,18 @@ function PDFViewer({ defaultPdfUrl, defaultDocTitle, defaultDocId, token }) {
         const script = document.createElement('script');
         script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
         script.async = true;
-        
+
         script.onload = () => {
           window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
           setPdfjsLoaded(true);
         };
-        
+
         script.onerror = () => {
           console.warn('CORS or offline network detected, running in high-fidelity mock vector document mode.');
           setUseMock(true);
           setLoading(false);
         };
-        
+
         document.body.appendChild(script);
       } catch (err) {
         console.warn('PDF.js dynamic loader error. Falling back to mock engine.', err);
@@ -266,22 +266,22 @@ function PDFViewer({ defaultPdfUrl, defaultDocTitle, defaultDocId, token }) {
         setLoading(false);
       }
     };
-    
+
     loadPdfJs();
   }, []);
 
   // PDF.js rendering pipeline
   useEffect(() => {
     if (!pdfjsLoaded) return;
-    
+
     let isCurrent = true;
     setLoading(true);
-    
+
     // Clear existing annotations when changing document
     if (selectedDoc.id !== (pdfDocument ? pdfDocument._docId : '')) {
       setAnnotations([]);
     }
-    
+
     const renderPDF = async () => {
       try {
         // Cancel previous rendering process
@@ -304,7 +304,7 @@ function PDFViewer({ defaultPdfUrl, defaultDocTitle, defaultDocId, token }) {
         setNumPages(pdf.numPages);
         setCurrentPage(1);
         setUseMock(false);
-        
+
         // Update document page count in list
         setDocumentsList(prev => prev.map(doc => doc.id === selectedDoc.id ? { ...doc, pages: pdf.numPages } : doc));
         setLoading(false);
@@ -353,7 +353,7 @@ function PDFViewer({ defaultPdfUrl, defaultDocTitle, defaultDocId, token }) {
         }
 
         const payload = await response.json();
-        
+
         if (Array.isArray(payload.data)) {
           const mappedActivities = payload.data.map(item => {
             let formattedTime = '';
@@ -410,18 +410,18 @@ function PDFViewer({ defaultPdfUrl, defaultDocTitle, defaultDocId, token }) {
 
         const canvas = canvasRef.current;
         const context = canvas.getContext('2d', { alpha: false });
-        
+
         // Setup viewport scaling and rotation
         const viewport = page.getViewport({ scale: zoom, rotation: rotation });
-        
+
         // Calculate devicePixelRatio for crystal clear canvas text
         const dpr = window.devicePixelRatio || 1;
         canvas.width = viewport.width * dpr;
         canvas.height = viewport.height * dpr;
-        
+
         canvas.style.width = `${viewport.width}px`;
         canvas.style.height = `${viewport.height}px`;
-        
+
         context.scale(dpr, dpr);
 
         const renderContext = {
@@ -431,7 +431,7 @@ function PDFViewer({ defaultPdfUrl, defaultDocTitle, defaultDocId, token }) {
 
         const renderTask = page.render(renderContext);
         renderTaskRef.current = renderTask;
-        
+
         await renderTask.promise;
         renderTaskRef.current = null;
       } catch (err) {
@@ -488,17 +488,17 @@ function PDFViewer({ defaultPdfUrl, defaultDocTitle, defaultDocId, token }) {
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    
+
     if (file.type !== 'application/pdf') {
       showNotificationToast('Vui lòng chỉ tải tài liệu có định dạng PDF!');
       return;
     }
 
     const objectUrl = URL.createObjectURL(file);
-    const sizeStr = file.size > 1024 * 1024 
-      ? `${(file.size / (1024 * 1024)).toFixed(1)} MB` 
+    const sizeStr = file.size > 1024 * 1024
+      ? `${(file.size / (1024 * 1024)).toFixed(1)} MB`
       : `${(file.size / 1024).toFixed(0)} KB`;
-    
+
     const newDoc = {
       id: `uploaded-${Date.now()}`,
       title: file.name,
@@ -527,7 +527,7 @@ function PDFViewer({ defaultPdfUrl, defaultDocTitle, defaultDocId, token }) {
     setDocumentsList([newDoc, ...documentsList]);
     setSelectedDoc(newDoc);
     showNotificationToast(`Đã tải lên và mở file thành công!`);
-    
+
     // Clear input
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
@@ -582,7 +582,7 @@ function PDFViewer({ defaultPdfUrl, defaultDocTitle, defaultDocId, token }) {
   const saveSignature = () => {
     const canvas = signatureCanvasRef.current;
     if (!canvas) return;
-    
+
     const blank = document.createElement('canvas');
     blank.width = canvas.width;
     blank.height = canvas.height;
@@ -608,7 +608,7 @@ function PDFViewer({ defaultPdfUrl, defaultDocTitle, defaultDocId, token }) {
     };
 
     setAnnotations([...annotations, newAnnot]);
-    
+
     // Add to activity timeline
     const activityMsg = `Đã ký nháp điện tử tại Trang ${currentPage}`;
     setActivities(prev => [
@@ -643,7 +643,7 @@ function PDFViewer({ defaultPdfUrl, defaultDocTitle, defaultDocId, token }) {
     };
 
     setAnnotations([...annotations, newAnnot]);
-    
+
     // Add to activity timeline
     const activityMsg = `Đã đóng dấu mộc [${stampLabels[stampType]}] tại Trang ${currentPage}`;
     setActivities(prev => [
@@ -720,7 +720,7 @@ function PDFViewer({ defaultPdfUrl, defaultDocTitle, defaultDocId, token }) {
       // update doc status
       const isApproved = annotations.some(a => a.type === 'stamp' && a.stampType === 'approved');
       const nextStatus = isApproved ? 'Đã duyệt' : selectedDoc.status;
-      
+
       setDocumentsList(prev => prev.map(doc => doc.id === selectedDoc.id ? { ...doc, status: nextStatus } : doc));
       setSelectedDoc(prev => ({ ...prev, status: nextStatus }));
 
@@ -728,7 +728,7 @@ function PDFViewer({ defaultPdfUrl, defaultDocTitle, defaultDocId, token }) {
         { id: Date.now(), user: 'Hệ thống (DMS)', action: `Đã lưu chữ ký số và cập nhật hồ sơ thành công.`, time: new Date().toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' }) },
         ...prev
       ]);
-      
+
       showNotificationToast('✨ Đã lưu tài liệu ký số thành công lên máy chủ DMS!');
     }, 1500);
   };
@@ -760,7 +760,7 @@ function PDFViewer({ defaultPdfUrl, defaultDocTitle, defaultDocId, token }) {
         <div className="pdf-viewer-toolbar">
           <div className="pdf-toolbar-group">
             {/* Sidebar toggle */}
-            <button 
+            <button
               className={`pdf-btn ${leftSidebarOpen ? 'active' : ''}`}
               title="Đóng/Mở thanh công cụ trái"
               onClick={() => setLeftSidebarOpen(!leftSidebarOpen)}
@@ -768,20 +768,20 @@ function PDFViewer({ defaultPdfUrl, defaultDocTitle, defaultDocId, token }) {
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
               <span>Thư viện ({documentsList.length})</span>
             </button>
-            
+
             <div className="pdf-toolbar-divider"></div>
 
             {/* Page navigation */}
-            <button 
-              className="pdf-btn pdf-btn-icon" 
+            <button
+              className="pdf-btn pdf-btn-icon"
               disabled={currentPage <= 1 || loading}
               onClick={() => handlePageChange(currentPage - 1)}
             >
               ←
             </button>
             <div className="pdf-page-indicator">
-              <input 
-                type="number" 
+              <input
+                type="number"
                 className="pdf-page-input"
                 value={currentPage}
                 onChange={(e) => handlePageChange(parseInt(e.target.value) || 1)}
@@ -790,8 +790,8 @@ function PDFViewer({ defaultPdfUrl, defaultDocTitle, defaultDocId, token }) {
               />
               <span>/ {numPages}</span>
             </div>
-            <button 
-              className="pdf-btn pdf-btn-icon" 
+            <button
+              className="pdf-btn pdf-btn-icon"
               disabled={currentPage >= numPages || loading}
               onClick={() => handlePageChange(currentPage + 1)}
             >
@@ -804,7 +804,7 @@ function PDFViewer({ defaultPdfUrl, defaultDocTitle, defaultDocId, token }) {
             <button className="pdf-btn pdf-btn-icon" disabled={zoom <= 0.6 || loading} onClick={() => handleZoom(-0.1)}>
               ➖
             </button>
-            <Select 
+            <Select
               style={{ width: '90px' }}
               value={`${Math.round(zoom * 100)}%`}
               onChange={(val) => setZoom(parseFloat(val) / 100)}
@@ -822,7 +822,7 @@ function PDFViewer({ defaultPdfUrl, defaultDocTitle, defaultDocId, token }) {
               ➕
             </button>
             <button className="pdf-btn" disabled={loading} onClick={() => handleZoom('width')}>
-              Vừa trang
+              <span>↔️ </span><span className="pdf-btn-text">Vừa trang</span>
             </button>
             <button className="pdf-btn pdf-btn-icon" title="Xoay trang" onClick={handleRotate} disabled={loading}>
               🔄
@@ -838,22 +838,22 @@ function PDFViewer({ defaultPdfUrl, defaultDocTitle, defaultDocId, token }) {
               📥
             </button>
             <button className="pdf-btn active" onClick={saveAllChanges} disabled={loading || annotations.length === 0} title="Lưu chữ ký lên DMS">
-              💾 Lưu Ký Số
+              <span>💾 </span><span className="pdf-btn-text">Lưu Ký Số</span>
             </button>
-            <button 
+            <button
               className={`pdf-btn ${rightSidebarOpen ? 'active' : ''}`}
               title="Đóng/Mở chi tiết phê duyệt"
               onClick={() => setRightSidebarOpen(!rightSidebarOpen)}
             >
-              <span>Chi tiết</span>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="15" y1="3" x2="15" y2="21"></line></svg>
+              <span className="pdf-btn-text">Chi tiết</span>
             </button>
           </div>
         </div>
 
         {/* Central Workspace area */}
         <div className="pdf-viewer-workspace">
-          
+
           {/* Left Sidebar (Document library, pages, signature tools) */}
           <div className={`pdf-sidebar-left ${leftSidebarOpen ? '' : 'collapsed'}`}>
             <div className="pdf-sidebar-tabs">
@@ -867,14 +867,14 @@ function PDFViewer({ defaultPdfUrl, defaultDocTitle, defaultDocId, token }) {
                 Ký & Đóng dấu
               </div>
             </div>
-            
+
             <div className="pdf-sidebar-content">
               {leftTab === 'library' && (
                 <>
                   <div className="pdf-tool-title">Tài liệu DMS hệ thống</div>
                   <div className="pdf-doc-list">
                     {documentsList.map((doc) => (
-                      <div 
+                      <div
                         key={doc.id}
                         className={`pdf-doc-item ${selectedDoc.id === doc.id ? 'active' : ''}`}
                         onClick={() => setSelectedDoc(doc)}
@@ -889,13 +889,13 @@ function PDFViewer({ defaultPdfUrl, defaultDocTitle, defaultDocId, token }) {
                   </div>
 
                   <div className="pdf-tool-divider" style={{ borderTop: '1px solid var(--border)', margin: '10px 0' }}></div>
-                  
+
                   {/* File Uploader Button */}
                   <button className="pdf-picker-btn" onClick={() => fileInputRef.current?.click()}>
                     📁 Tải PDF từ Máy Tính
                   </button>
-                  <input 
-                    type="file" 
+                  <input
+                    type="file"
                     ref={fileInputRef}
                     onChange={handleFileChange}
                     accept="application/pdf"
@@ -909,7 +909,7 @@ function PDFViewer({ defaultPdfUrl, defaultDocTitle, defaultDocId, token }) {
                   {Array.from({ length: numPages }, (_, index) => {
                     const pageNum = index + 1;
                     return (
-                      <div 
+                      <div
                         key={pageNum}
                         className={`pdf-thumbnail-card ${currentPage === pageNum ? 'active' : ''}`}
                         onClick={() => setCurrentPage(pageNum)}
@@ -954,7 +954,7 @@ function PDFViewer({ defaultPdfUrl, defaultDocTitle, defaultDocId, token }) {
                     <div className="pdf-tool-title">Vẽ Chữ Ký Điện Tử</div>
                     <div className="pdf-signature-pad-container">
                       <div className="pdf-signature-canvas-wrapper">
-                        <canvas 
+                        <canvas
                           ref={signatureCanvasRef}
                           className="pdf-signature-canvas"
                           width={260}
@@ -997,7 +997,7 @@ function PDFViewer({ defaultPdfUrl, defaultDocTitle, defaultDocId, token }) {
                 <div>Đang tải và đồng bộ tài liệu...</div>
               </div>
             )}
-            
+
             <div className="pdf-view-viewport">
               {useMock ? (
                 /* Falling back to gorgeous mockup representation */
@@ -1013,7 +1013,7 @@ function PDFViewer({ defaultPdfUrl, defaultDocTitle, defaultDocId, token }) {
                     marginBottom: `${40 * zoom}px`
                   }}
                 >
-                  <div 
+                  <div
                     className="pdf-mock-doc"
                     style={{
                       position: 'absolute',
@@ -1029,10 +1029,10 @@ function PDFViewer({ defaultPdfUrl, defaultDocTitle, defaultDocId, token }) {
                       <span className="pdf-mock-logo">🏛️ DMS APPROVAL SYSTEM</span>
                       <span className="pdf-mock-doc-no">{selectedDoc.mockPages?.[currentPage - 1]?.no || 'Hồ sơ chờ duyệt'}</span>
                     </div>
-                    
+
                     <div className="pdf-mock-content">
                       <h2 className="pdf-mock-title">{selectedDoc.mockPages?.[currentPage - 1]?.title || selectedDoc.title}</h2>
-                      
+
                       {selectedDoc.mockPages?.[currentPage - 1]?.sections?.map((sec, idx) => (
                         <div key={idx}>
                           <div className="pdf-mock-section">{sec.title}</div>
@@ -1043,7 +1043,7 @@ function PDFViewer({ defaultPdfUrl, defaultDocTitle, defaultDocId, token }) {
 
                     <div className="pdf-mock-footer">
                       <span>Hệ thống lưu trữ DMS v1.8</span>
-                      
+
                       {/* Render sign box in mock representation only if on last page */}
                       {currentPage === numPages && (
                         <div className="pdf-mock-sign-block">
@@ -1077,7 +1077,7 @@ function PDFViewer({ defaultPdfUrl, defaultDocTitle, defaultDocId, token }) {
                           <button className="pdf-annotation-delete" onClick={() => deleteAnnotation(annot.id)}>
                             ×
                           </button>
-                          
+
                           {annot.type === 'stamp' ? (
                             <div className={`pdf-annotation-stamp ${annot.stampType}`}>
                               {annot.text}
@@ -1097,7 +1097,7 @@ function PDFViewer({ defaultPdfUrl, defaultDocTitle, defaultDocId, token }) {
                 </div>
               ) : (
                 /* PDFJS Canvas Renderer */
-                <div 
+                <div
                   className="pdf-canvas-container"
                   style={{
                     marginTop: `${20 * zoom}px`,
@@ -1105,7 +1105,7 @@ function PDFViewer({ defaultPdfUrl, defaultDocTitle, defaultDocId, token }) {
                   }}
                 >
                   <canvas ref={canvasRef} className="pdf-canvas-el" />
-                  
+
                   {/* Annotation overlay layer mapping annotations */}
                   <div className="pdf-annotations-layer">
                     {pageAnnotations.map((annot) => (
@@ -1130,7 +1130,7 @@ function PDFViewer({ defaultPdfUrl, defaultDocTitle, defaultDocId, token }) {
                         <button className="pdf-annotation-delete" onClick={() => deleteAnnotation(annot.id)}>
                           ×
                         </button>
-                        
+
                         {annot.type === 'stamp' ? (
                           <div className={`pdf-annotation-stamp ${annot.stampType}`}>
                             {annot.text}

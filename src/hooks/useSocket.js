@@ -30,7 +30,7 @@ export function useSocket(position, onTaskReceived) {
         console.log('📩 MESSAGE RECEIVED:', message.body);
         let data = {};
         console.log(222222, message?.body);
-        
+
         try { data = JSON.parse(message.body); } catch (e) { data = { raw: message.body }; }
 
         // call provided handler
